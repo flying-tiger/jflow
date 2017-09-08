@@ -9,7 +9,7 @@ namespace jflow {
     // Declarations (this should eventually be in a common module...)
     //-------------------------------------------------------------------------
     using double2 = std::array<double, 2>;
-    
+
     struct runtime_error : public std::runtime_error {
         runtime_error(const std::string& what) : std::runtime_error(what) {}
     };
@@ -56,19 +56,19 @@ namespace jflow {
         // Only create object via structured_grid::jface()
         structured_grid_jface(const structured_grid& parent, std::size_t index)
             : parent(parent), index(index) {}
-    
+
         const structured_grid& parent;  // Parent grid containing this face
         const std::size_t index;        // Location in the set of i-faces
 
     };
-        
+
     //-------------------------------------------------------------------------
     // Main Class
     //-------------------------------------------------------------------------
     // A class to represent a 2D structured grid. The figure belows shows how
     // nodes and faces are numbered (if => iface, jf => jface).
     //
-    //                  jf=2             jf=5             jf=8      
+    //                  jf=2             jf=5             jf=8
     //   j=2     2----------------5----------------8----------------11
     //           |                |                |                |
     //           |                |                |                |
@@ -79,7 +79,7 @@ namespace jflow {
     //   j=1     1----------------4----------------7----------------10
     //           |                |                |                |
     //           |                |                |                |
-    //          if=0             if=2            if=4              if=6  
+    //          if=0             if=2            if=4              if=6
     //           |                |                |                |
     //           |                |                |                |
     //           |      jf=0      |      jf=3      |      jf=6      |
@@ -91,7 +91,7 @@ namespace jflow {
         friend structured_grid_iface;
         friend structured_grid_jface;
 
-    public:       
+    public:
         structured_grid(std::size_t ni, std::size_t nj, const std::vector<double2>& vertices)
             : ni(ni), nj(nj), vertices(vertices) {
             check_precondition(ni > 0, "Vertex count ni must be positive.");
@@ -118,7 +118,7 @@ namespace jflow {
         }
 
         structured_grid_iface iface(size_t n) const {
-            check_precondition(0 <= n && n < ni*(nj - 1), "Iface index is out of range.");             
+            check_precondition(0 <= n && n < ni*(nj - 1), "Iface index is out of range.");
             return structured_grid_iface(*this, n);
         }
 
@@ -135,7 +135,7 @@ namespace jflow {
 
         structured_grid_jface jface(size_t i, size_t j) const {
             check_precondition(0 <= i && i < ni - 1, "Jface i-index is out of range.");
-            check_precondition(0 <= j && j < nj, "Jface j-index is out of range.");             
+            check_precondition(0 <= j && j < nj, "Jface j-index is out of range.");
             return structured_grid_jface(*this, i*nj + j);
         }
 
@@ -144,7 +144,7 @@ namespace jflow {
         std::size_t nj;                           // Number of vertices in j-coordinate
         std::vector<double2> vertices;            // Vertices defining the mesh
         //vector<double2> iface_area_vectors;  // Area vector for constant-i faces
-        //vector<double2> jface_area_vectors;  // Area vector for constant-j faces   
+        //vector<double2> jface_area_vectors;  // Area vector for constant-j faces
 
     };
 
@@ -159,6 +159,7 @@ namespace jflow {
     inline const double2& structured_grid_iface::vertex(std::size_t i) const {
         check_precondition(0 <= i && i < 2, "Vertex index is out of range.");
         return parent.vertices[index + (1 - i) + index/(parent.nj - 1)];
+        // Truncating integer division is intentional
     }
 
     inline bool structured_grid_jface::operator==(const structured_grid_jface& other) const {
@@ -168,9 +169,8 @@ namespace jflow {
     inline const double2& structured_grid_jface::vertex(size_t i) const {
         check_precondition(0 <= i && i < 2, "Vertex index out of range.");
         return parent.vertices[index + i*parent.nj];
-        // Integer division is intentional
     }
-            
+
 
     //-------------------------------------------------------------------------
     // Grid Constuction Utilites
