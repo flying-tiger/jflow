@@ -1,4 +1,4 @@
 **/*.swp
-obj
 **/.ipynb_checkpoints
-bin
+build
+.vs
