@@ -2,22 +2,45 @@
 
 namespace jflow {
 
+    void structured_grid::init_area_vectors() {
+        iface_area_vectors.clear();
+        iface_area_vectors.reserve(num_iface());
+        for (auto n = 0u; n < num_iface(); ++n) {
+            auto& v0 = this->iface(n).vertex(0);
+            auto& v1 = this->iface(n).vertex(1);
+            iface_area_vectors.push_back({
+                -(v1[1] - v0[1]),
+                v1[0] - v0[0]
+            });
+        }
+        jface_area_vectors.clear();
+        jface_area_vectors.reserve(num_jface());
+        for (auto n = 0u; n < num_jface(); ++n) {
+            auto& v0 = this->jface(n).vertex(0);
+            auto& v1 = this->jface(n).vertex(1);
+            jface_area_vectors.push_back({
+                -(v1[1] - v0[1]),
+                v1[0] - v0[0]
+            });
+        }
+    }
+
     structured_grid make_cartesian_grid(
         double2 xrange,  // {xmin, xmax}
         double2 yrange,  // {ymin, ymax}
         std::size_t nx,  // Number of points in x
         std::size_t ny   // Number of points in y
-    ) { 
+    ) {
         check_precondition(nx >= 2, "nx is too small.");
         check_precondition(ny >= 2, "ny is too small.");
         std::vector<double2> vertices;
         vertices.reserve(nx*ny);
         auto dx = (xrange[1] - xrange[0]) / (nx - 1);
-        auto dy = (yrange[1] - yrange[0]) / (ny - 1);        
+        auto dy = (yrange[1] - yrange[0]) / (ny - 1);
         for (auto i = 0u; i < nx; ++i) {
             for (auto j = 0u; j < ny; ++j) {
                 auto x = xrange[0] + i*dx;
-                auto y = yrange[0] + j*dy;                
+                auto y = yrange[0] + j*dy;
                 vertices.push_back(double2{ x,y });
             }
         }
