@@ -11,6 +11,7 @@ project(jflow)
 include_directories(
     source
     extern/catch/single_include
+    extern/eigen
 )
 
 add_executable(test_jflow
