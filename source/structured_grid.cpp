@@ -2,6 +2,10 @@
 
 namespace jflow {
 
+    double cross(const double2& x, const double2& y) {
+        return x[0]*y[1] - x[1]*y[0];
+    }
+
     void structured_grid::init_area_vectors() {
         iface_area_vectors.clear();
         iface_area_vectors.reserve(num_iface());
@@ -22,6 +26,27 @@ namespace jflow {
                 -(v1[1] - v0[1]),
                 v1[0] - v0[0]
             });
+        }
+    }
+
+    void structured_grid::init_cell_volumes() {
+        cell_volumes.clear();
+        cell_volumes.reserve(num_cell());
+        for (auto n = 0u; n < num_cell(); ++n) {
+
+            // Shorthand
+            auto& v0 = this->cell(n).vertex(0);
+            auto& v1 = this->cell(n).vertex(1);
+            auto& v2 = this->cell(n).vertex(2);
+            auto& v3 = this->cell(n).vertex(3);
+
+            // This calculation of the volume (really the area in 2D) is exact
+            // when all four vertices are co-planar. Don't use this to compute
+            // the area of a general 3D quadrilateral!
+            cell_volumes.push_back(0.5 * (
+                cross(v1 - v0, v3 - v0) +
+                cross(v3 - v2, v1 - v2)
+            ));
         }
     }
 

@@ -2,6 +2,12 @@
 #include "catch.hpp"
 #include "structured_grid.hpp"
 
+TEST_CASE("test cross product functoin") {
+    jflow::double2 x( 3.0, 4.0 );
+    jflow::double2 y( 5.0, 6.0 );
+    REQUIRE( jflow::cross(x,y) == -2.0 );
+}
+
 TEST_CASE("test structured_grid class") {
     // Creates a simple 5-by-3 point test gird and verifies that our
     // indexing operations work as intended. Grid looks like this:
@@ -115,6 +121,11 @@ TEST_CASE("test structured_grid class") {
         REQUIRE_THROWS((grid.cell(0).iface(2)));
         REQUIRE_THROWS((grid.cell(0).jface(-1)));
         REQUIRE_THROWS((grid.cell(0).jface(2)));
+    }
+
+    SECTION("Test cell volume calculation") {
+        REQUIRE((grid.cell(0).volume() == 1.0));
+        REQUIRE((grid.cell(grid.num_cell() - 1).volume() == 1.0));
     }
 
 }

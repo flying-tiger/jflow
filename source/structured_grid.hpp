@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-
+#include <Eigen/Core>
 #include <iostream>
 
 namespace jflow {
@@ -10,7 +10,7 @@ namespace jflow {
     //-------------------------------------------------------------------------
     // Declarations (this should eventually be in a common module...)
     //-------------------------------------------------------------------------
-    using double2 = std::array<double, 2>;
+    using double2 = Eigen::Vector2d;
 
     struct runtime_error : public std::runtime_error {
         runtime_error(const std::string& what) : std::runtime_error(what) {}
@@ -21,6 +21,9 @@ namespace jflow {
     };
 
     void check_precondition(bool check, const std::string& what);
+
+    // Eigen does not provide a cross product specialization for 2D vectors
+    double cross(const double2& x, const double2& y);
 
 
     //-------------------------------------------------------------------------
@@ -96,6 +99,7 @@ namespace jflow {
         const double2& vertex(std::size_t i) const;
         structured_grid_iface iface(std::size_t i) const;
         structured_grid_jface jface(std::size_t i) const;
+        double volume() const;
 
     private:
         // Only create objects via structured_grid::cell()
@@ -145,6 +149,7 @@ namespace jflow {
             check_precondition(nj > 0, "Vertex count nj must be positive.");
             check_precondition(vertices.size() == ni*nj, "Length of vertex vector doesn't match ni, nj.");
             init_area_vectors();
+            init_cell_volumes();
         }
 
         structured_grid(std::size_t ni, std::size_t nj, std::vector<double2>&& vertices)
@@ -153,6 +158,7 @@ namespace jflow {
             check_precondition(nj > 0, "Vertex count nj must be positive.");
             check_precondition(vertices.size() == ni*nj, "Length of vertex vector doesn't match ni, nj.");
             init_area_vectors();
+            init_cell_volumes();
         }
 
         std::size_t num_vertex() const {
@@ -217,13 +223,14 @@ namespace jflow {
 
     private:
         void init_area_vectors();
+        void init_cell_volumes();
 
         std::size_t ni;                           // Number of vertices in i-coordinate
         std::size_t nj;                           // Number of vertices in j-coordinate
-        std::vector<double2> vertices;            // Vertices defining the mesh
+        std::vector<double>  cell_volumes;        // Volume of each grid cell
         std::vector<double2> iface_area_vectors;  // Area vector for constant-i faces
         std::vector<double2> jface_area_vectors;  // Area vector for constant-j faces
-
+        std::vector<double2> vertices;            // Vertices defining the mesh
     };
 
 
@@ -257,6 +264,10 @@ namespace jflow {
     inline structured_grid_jface structured_grid_cell::jface(std::size_t i) const {
         check_precondition(0 <= i && i < 2, "Jface index is out of range.");
         return parent.jface(id + i*(parent.nj - 1));
+    }
+
+    inline double structured_grid_cell::volume() const {
+        return parent.cell_volumes[id];
     }
 
     inline bool structured_grid_iface::operator==(const structured_grid_iface& other) const {
