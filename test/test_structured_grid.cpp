@@ -1,12 +1,5 @@
-#include <iostream>
 #include "catch.hpp"
 #include "structured_grid.hpp"
-
-TEST_CASE("test cross product functoin") {
-    jflow::double2 x( 3.0, 4.0 );
-    jflow::double2 y( 5.0, 6.0 );
-    REQUIRE( jflow::cross(x,y) == -2.0 );
-}
 
 TEST_CASE("test structured_grid class") {
     // Creates a simple 5-by-3 point test gird and verifies that our
@@ -24,25 +17,25 @@ TEST_CASE("test structured_grid class") {
     //
     //         i=0   i=1   i=2   i=3   i=4
 
-    using dbl2 = jflow::double2;
+    using vec2 = jflow::vector2;
 
     // Don't change parameters! Tests will break
-    dbl2 xrange = { -2.0, 2.0 };
-    dbl2 yrange = { -1.0, 1.0 };
+    vec2 xrange = { -2.0, 2.0 };
+    vec2 yrange = { -1.0, 1.0 };
     std::size_t nx = 5, ny = 3;
     auto grid = jflow::make_cartesian_grid(xrange, yrange, nx, ny);
 
     SECTION("Test vertex indexing (linear)") {
-        REQUIRE((grid.vertex(0) == dbl2{ -2.0, -1.0 }));
-        REQUIRE((grid.vertex(14) == dbl2{ 2.0, 1.0 }));
+        REQUIRE((grid.vertex(0) == vec2{ -2.0, -1.0 }));
+        REQUIRE((grid.vertex(14) == vec2{ 2.0, 1.0 }));
         REQUIRE_THROWS(grid.vertex(-1));
         REQUIRE_THROWS(grid.vertex(grid.num_vertex()));
     }
 
     SECTION("Test vertex indexing via (i,j) pairs") {
-        REQUIRE((grid.vertex(2,1) == dbl2{ 0.0, 0.0 }));
-        REQUIRE((grid.vertex(0,2) == dbl2{ -2.0, 1.0 }));
-        REQUIRE((grid.vertex(4,0) == dbl2{ 2.0, -1.0 }));
+        REQUIRE((grid.vertex(2,1) == vec2{ 0.0, 0.0 }));
+        REQUIRE((grid.vertex(0,2) == vec2{ -2.0, 1.0 }));
+        REQUIRE((grid.vertex(4,0) == vec2{ 2.0, -1.0 }));
         REQUIRE_THROWS(grid.vertex(0, -1));
         REQUIRE_THROWS(grid.vertex(0, 3));
         REQUIRE_THROWS(grid.vertex(-1, 0));
@@ -90,10 +83,10 @@ TEST_CASE("test structured_grid class") {
     }
 
     SECTION("Test iface/jface area_vector() accessor") {
-        REQUIRE((grid.iface(0).area_vector() == dbl2{1.0, 0.0}));
-        REQUIRE((grid.iface(9).area_vector() == dbl2{1.0, 0.0}));
-        REQUIRE((grid.jface(0).area_vector() == dbl2{0.0, 1.0}));
-        REQUIRE((grid.jface(11).area_vector() == dbl2{0.0, 1.0}));
+        REQUIRE((grid.iface(0).area_vector() == vec2{1.0, 0.0}));
+        REQUIRE((grid.iface(9).area_vector() == vec2{1.0, 0.0}));
+        REQUIRE((grid.jface(0).area_vector() == vec2{0.0, 1.0}));
+        REQUIRE((grid.jface(11).area_vector() == vec2{0.0, 1.0}));
     }
 
     SECTION("Test cell indexing (linear)") {

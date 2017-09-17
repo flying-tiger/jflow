@@ -1,30 +1,6 @@
-#include <array>
-#include <stdexcept>
-#include <string>
-#include <vector>
-#include <Eigen/Core>
-#include <iostream>
+#include "jflow.hpp"
 
 namespace jflow {
-
-    //-------------------------------------------------------------------------
-    // Declarations (this should eventually be in a common module...)
-    //-------------------------------------------------------------------------
-    using double2 = Eigen::Vector2d;
-
-    struct runtime_error : public std::runtime_error {
-        runtime_error(const std::string& what) : std::runtime_error(what) {}
-    };
-
-    struct precondition_error : public runtime_error {
-        precondition_error(const std::string& what) : runtime_error(what) {}
-    };
-
-    void check_precondition(bool check, const std::string& what);
-
-    // Eigen does not provide a cross product specialization for 2D vectors
-    double cross(const double2& x, const double2& y);
-
 
     //-------------------------------------------------------------------------
     // Helper Classes
@@ -60,8 +36,8 @@ namespace jflow {
 
     public:
         bool operator==(const structured_grid_iface& other) const;
-        const double2& area_vector() const;
-        const double2& vertex(std::size_t i) const;
+        const vector2& area_vector() const;
+        const vector2& vertex(std::size_t i) const;
 
     private:
         // Only create object via structured_grid::iface()
@@ -78,8 +54,8 @@ namespace jflow {
 
     public:
         bool operator==(const structured_grid_jface& other) const;
-        const double2& area_vector() const;
-        const double2& vertex(std::size_t i) const;
+        const vector2& area_vector() const;
+        const vector2& vertex(std::size_t i) const;
 
     private:
         // Only create object via structured_grid::jface()
@@ -96,7 +72,7 @@ namespace jflow {
 
     public:
         bool operator==(const structured_grid_cell& other) const;
-        const double2& vertex(std::size_t i) const;
+        const vector2& vertex(std::size_t i) const;
         structured_grid_iface iface(std::size_t i) const;
         structured_grid_jface jface(std::size_t i) const;
         double volume() const;
@@ -143,7 +119,7 @@ namespace jflow {
         // TODO: Add iterator protocols
 
     public:
-        structured_grid(std::size_t ni, std::size_t nj, const std::vector<double2>& vertices)
+        structured_grid(std::size_t ni, std::size_t nj, const std::vector<vector2>& vertices)
             : ni(ni), nj(nj), vertices(vertices) {
             check_precondition(ni > 0, "Vertex count ni must be positive.");
             check_precondition(nj > 0, "Vertex count nj must be positive.");
@@ -152,7 +128,7 @@ namespace jflow {
             init_cell_volumes();
         }
 
-        structured_grid(std::size_t ni, std::size_t nj, std::vector<double2>&& vertices)
+        structured_grid(std::size_t ni, std::size_t nj, std::vector<vector2>&& vertices)
             : ni(ni), nj(nj), vertices(vertices) {
             check_precondition(ni > 0, "Vertex count ni must be positive.");
             check_precondition(nj > 0, "Vertex count nj must be positive.");
@@ -165,12 +141,12 @@ namespace jflow {
             return ni*nj;
         }
 
-        const double2& vertex(std::size_t i) const {
+        const vector2& vertex(std::size_t i) const {
             check_precondition(0 <= i && i < num_vertex(), "Vertex index is out of range.");
             return vertices[i];
         }
 
-        const double2& vertex(std::size_t i, std::size_t j) const {
+        const vector2& vertex(std::size_t i, std::size_t j) const {
             check_precondition(0 <= i && i < ni, "Vertex i-index is out of range.");
             check_precondition(0 <= j && j < nj, "Vertex j-index is out of range.");
             return vertices[i*nj + j];
@@ -228,9 +204,9 @@ namespace jflow {
         std::size_t ni;                           // Number of vertices in i-coordinate
         std::size_t nj;                           // Number of vertices in j-coordinate
         std::vector<double>  cell_volumes;        // Volume of each grid cell
-        std::vector<double2> iface_area_vectors;  // Area vector for constant-i faces
-        std::vector<double2> jface_area_vectors;  // Area vector for constant-j faces
-        std::vector<double2> vertices;            // Vertices defining the mesh
+        std::vector<vector2> iface_area_vectors;  // Area vector for constant-i faces
+        std::vector<vector2> jface_area_vectors;  // Area vector for constant-j faces
+        std::vector<vector2> vertices;            // Vertices defining the mesh
     };
 
 
@@ -241,7 +217,7 @@ namespace jflow {
         return &parent == &other.parent && id == other.id;
     }
 
-    inline const double2& structured_grid_cell::vertex(std::size_t i) const {
+    inline const vector2& structured_grid_cell::vertex(std::size_t i) const {
         check_precondition(0 <= i && i < 4, "Vertex index is out of range");
         auto lower_left = id + id/(parent.nj - 1); // Truncation intended
         switch (i) {
@@ -274,17 +250,17 @@ namespace jflow {
         return &parent == &other.parent &&  id == other.id;
     }
 
-    inline const double2& structured_grid_iface::area_vector() const {
+    inline const vector2& structured_grid_iface::area_vector() const {
         return parent.iface_area_vectors[id];
     }
 
-    inline const double2& structured_grid_iface::vertex(std::size_t i) const {
+    inline const vector2& structured_grid_iface::vertex(std::size_t i) const {
         check_precondition(0 <= i && i < 2, "Vertex index is out of range.");
         return parent.vertices[id + (1 - i) + id/(parent.nj - 1)];
         // Truncating integer division is intentional
     }
 
-    inline const double2& structured_grid_jface::area_vector() const {
+    inline const vector2& structured_grid_jface::area_vector() const {
         return parent.jface_area_vectors[id];
     }
 
@@ -292,7 +268,7 @@ namespace jflow {
         return &parent == &other.parent &&  id == other.id;
     }
 
-    inline const double2& structured_grid_jface::vertex(size_t i) const {
+    inline const vector2& structured_grid_jface::vertex(size_t i) const {
         check_precondition(0 <= i && i < 2, "Vertex index out of range.");
         return parent.vertices[id + i*parent.nj];
     }
@@ -302,8 +278,8 @@ namespace jflow {
     // Grid Constuction Utilites
     //-------------------------------------------------------------------------
     structured_grid make_cartesian_grid(
-        double2 xrange, // {xmin, xmax}
-        double2 yrange, // {ymin, ymax}
+        vector2 xrange, // {xmin, xmax}
+        vector2 yrange, // {ymin, ymax}
         std::size_t nx, // Number of points in x
         std::size_t ny  // Number of points in y
     );
