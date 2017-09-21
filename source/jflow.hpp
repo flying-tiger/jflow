@@ -13,6 +13,11 @@ namespace jflow {
     using vector4 = Eigen::Matrix<double, 4, 1>;
     using vector5 = Eigen::Matrix<double, 4, 1>;
 
+    using matrix22 = Eigen::Matrix<double, 2, 2>;
+    using matrix33 = Eigen::Matrix<double, 3, 3>;
+    using matrix44 = Eigen::Matrix<double, 4, 4>;
+    using matrix55 = Eigen::Matrix<double, 5, 5>;
+
 
     //-----------------------------------------------------------------------
     // Error Handling

@@ -16,8 +16,10 @@ include_directories(
 
 add_executable(test_jflow
     test/test.cpp
+    test/test_euler.cpp
     test/test_jflow.cpp
     test/test_structured_grid.cpp
+    source/euler.cpp
     source/structured_grid.cpp
 )
 

@@ -1,57 +1,49 @@
-import std.core;
-
-module euler;
+#include <array>
+#include "jflow.hpp"
 
 namespace jflow {
 
-class euler {
+// TODO: Factor out hard-coded gas model (currently pg, g=1.4)
+struct euler {
 
-    using State    = std::array<double,4>;
-    using Flux     = std::array<double,4>;
-    using Jacobian = std::array<std::array<double,4>,4>;
-    using Fluxes   = std::array<Flux,2>;
+    // Type definitions
+    using state     = vector4;
+    using flux      = vector4;
+    using jacobian  = matrix44;
+    using fluxes    = std::array<flux,2>;
+    using jacobians = std::array<jacobian,2>;
 
-    Fluxes compute_fluxes(const State& q) {
+    // Field indices
+    struct field {
+        static const std::size_t density      = 0;
+        static const std::size_t momentum_x   = 1;
+        static const std::size_t momentum_y   = 2;
+        static const std::size_t total_energy = 3;
+    };
 
-        // TODO: Factor out assumption gamma = 1.4 (air)
+    // Function for debug/test
+    static fluxes compute_fluxes(const state& q);
+    static flux compute_interface_flux(const state& ql, const state& qr, const vector2& area);
 
-        // Create sensible names
-        auto& rho  = q[0];
-        auto& rhou = q[1];
-        auto& rhov = q[2];
-        auto& rhoE = q[3];
+};
 
-        // Primitive state
-        auto u = rhou/rho;
-        auto v = rhov/rho;
-        auto p = 0.4*(rhoE - 0.5*(rhou*u + rhov*v));
-        auto rhoH = rhoE + p;
-
-        // Compute fluxes
-        return {
-            Flux{ rhou, rhou*u+p, rhov*u,   rhoH*u },
-            Flux{ rhov, rhou*v,   rhov*v+p, rhoH*v }
-        };
-
-    }
-}
-
-class perfect_gas {
-
-    static const gamma = 1.4;
-
-    double compute_pressure(double rho, double e) {
-        return (gamma - 1)*rho*e;
-    }
-
-    std::array<double,2> compute_pressure_derivatives(double rho, double e) {
-        return {
-            (gamma - 1)*e,
-            (gamma - 1)*rho,
-        };
-    }
-
-}
+// This is a rough outline of how to factor out the gas model.
+//class perfect_gas {
+//
+//    static const gamma = 1.4;
+//
+//    double compute_pressure(double rho, double e) {
+//        return (gamma - 1)*rho*e;
+//    }
+//
+//    std::array<double,2> compute_pressure_derivatives(double rho, double e) {
+//        return {
+//            (gamma - 1)*e,
+//            (gamma - 1)*rho,
+//        };
+//    }
+//
+//}
 
 
 }
