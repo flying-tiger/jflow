@@ -20,8 +20,8 @@ TEST_CASE("test structured_grid class") {
     using vec2 = jflow::vector2;
 
     // Don't change parameters! Tests will break
-    vec2 xrange = { -2.0, 2.0 };
-    vec2 yrange = { -1.0, 1.0 };
+    vec2 xrange    = { -2.0, 2.0 };
+    vec2 yrange    = { -1.0, 1.0 };
     std::size_t nx = 5, ny = 3;
     auto grid = jflow::make_cartesian_grid(xrange, yrange, nx, ny);
 
@@ -33,9 +33,9 @@ TEST_CASE("test structured_grid class") {
     }
 
     SECTION("Test vertex indexing via (i,j) pairs") {
-        REQUIRE((grid.vertex(2,1) == vec2{ 0.0, 0.0 }));
-        REQUIRE((grid.vertex(0,2) == vec2{ -2.0, 1.0 }));
-        REQUIRE((grid.vertex(4,0) == vec2{ 2.0, -1.0 }));
+        REQUIRE((grid.vertex(2, 1) == vec2{ 0.0, 0.0 }));
+        REQUIRE((grid.vertex(0, 2) == vec2{ -2.0, 1.0 }));
+        REQUIRE((grid.vertex(4, 0) == vec2{ 2.0, -1.0 }));
         REQUIRE_THROWS(grid.vertex(0, -1));
         REQUIRE_THROWS(grid.vertex(0, 3));
         REQUIRE_THROWS(grid.vertex(-1, 0));
@@ -47,10 +47,10 @@ TEST_CASE("test structured_grid class") {
         // vector (t = v(1)-v(0)) cross the the edge normal vector to yield
         // the out-of-plane vector via righ-hand-rule. To achieve this,
         // vertex(0) must be the +j vertex.
-        REQUIRE((grid.iface(0).vertex(0) == grid.vertex(0,1)));
-        REQUIRE((grid.iface(0).vertex(1) == grid.vertex(0,0)));
-        REQUIRE((grid.iface(9).vertex(0) == grid.vertex(4,2)));
-        REQUIRE((grid.iface(9).vertex(1) == grid.vertex(4,1)));
+        REQUIRE((grid.iface(0).vertex(0) == grid.vertex(0, 1)));
+        REQUIRE((grid.iface(0).vertex(1) == grid.vertex(0, 0)));
+        REQUIRE((grid.iface(9).vertex(0) == grid.vertex(4, 2)));
+        REQUIRE((grid.iface(9).vertex(1) == grid.vertex(4, 1)));
         REQUIRE_THROWS(grid.iface(-1));
         REQUIRE_THROWS(grid.iface(grid.num_iface()));
     }
@@ -83,10 +83,10 @@ TEST_CASE("test structured_grid class") {
     }
 
     SECTION("Test iface/jface area_vector() accessor") {
-        REQUIRE((grid.iface(0).area_vector() == vec2{1.0, 0.0}));
-        REQUIRE((grid.iface(9).area_vector() == vec2{1.0, 0.0}));
-        REQUIRE((grid.jface(0).area_vector() == vec2{0.0, 1.0}));
-        REQUIRE((grid.jface(11).area_vector() == vec2{0.0, 1.0}));
+        REQUIRE((grid.iface(0).area_vector() == vec2{ 1.0, 0.0 }));
+        REQUIRE((grid.iface(9).area_vector() == vec2{ 1.0, 0.0 }));
+        REQUIRE((grid.jface(0).area_vector() == vec2{ 0.0, 1.0 }));
+        REQUIRE((grid.jface(11).area_vector() == vec2{ 0.0, 1.0 }));
     }
 
     SECTION("Test cell indexing (linear)") {
@@ -97,12 +97,12 @@ TEST_CASE("test structured_grid class") {
     }
 
     SECTION("Test cell indexing via (i,j) pairs") {
-        REQUIRE((grid.cell(1,1) == grid.cell(3)));
-        REQUIRE((grid.cell(3,0) == grid.cell(6)));
-        REQUIRE_THROWS((grid.cell(-1,0)));
-        REQUIRE_THROWS((grid.cell(4,0)));
-        REQUIRE_THROWS((grid.cell(0,-1)));
-        REQUIRE_THROWS((grid.cell(0,2)));
+        REQUIRE((grid.cell(1, 1) == grid.cell(3)));
+        REQUIRE((grid.cell(3, 0) == grid.cell(6)));
+        REQUIRE_THROWS((grid.cell(-1, 0)));
+        REQUIRE_THROWS((grid.cell(4, 0)));
+        REQUIRE_THROWS((grid.cell(0, -1)));
+        REQUIRE_THROWS((grid.cell(0, 2)));
     }
 
     SECTION("Test cell face indexing") {
@@ -120,5 +120,4 @@ TEST_CASE("test structured_grid class") {
         REQUIRE((grid.cell(0).volume() == 1.0));
         REQUIRE((grid.cell(grid.num_cell() - 1).volume() == 1.0));
     }
-
 }
