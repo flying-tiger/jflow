@@ -1,5 +1,5 @@
-#include <array>
 #include "jflow.hpp"
+#include <array>
 
 namespace jflow {
 
@@ -7,11 +7,9 @@ namespace jflow {
 struct euler {
 
     // Type definitions
-    using state     = vector4;
-    using flux      = vector4;
-    using jacobian  = matrix44;
-    using fluxes    = std::array<flux,2>;
-    using jacobians = std::array<jacobian,2>;
+    using state    = vector4;
+    using flux     = vector4;
+    using jacobian = matrix44;
 
     // Field indices
     struct field {
@@ -22,28 +20,21 @@ struct euler {
     };
 
     // Function for debug/test
-    static fluxes compute_fluxes(const state& q);
-    static flux compute_interface_flux(const state& ql, const state& qr, const vector2& area);
-
+    static flux compute_flux(const state& q, const vector2& n);
+    static flux compute_jump_flux(const state& ql, const state& qr, const vector2& n);
 };
 
-// This is a rough outline of how to factor out the gas model.
-//class perfect_gas {
-//
-//    static const gamma = 1.4;
-//
-//    double compute_pressure(double rho, double e) {
-//        return (gamma - 1)*rho*e;
-//    }
-//
-//    std::array<double,2> compute_pressure_derivatives(double rho, double e) {
-//        return {
-//            (gamma - 1)*e,
-//            (gamma - 1)*rho,
-//        };
-//    }
-//
-//}
+struct perfect_gas {
 
+    static const double gamma;
 
-}
+    static double compute_pressure(double e, double rho) {
+        return (gamma - 1) * rho * e;
+    }
+
+    static double compute_sound_speed(double e, double rho) {
+        return std::sqrt(gamma * (gamma - 1) * e);
+    }
+};
+
+}  // namespace jflow
