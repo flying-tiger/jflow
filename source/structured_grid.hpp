@@ -1,3 +1,6 @@
+#ifndef JFLOW_STRUCTURED_GRID_HPP
+#define JFLOW_STRUCTURED_GRID_HPP
+
 #include "jflow.hpp"
 #include <vector>
 
@@ -233,7 +236,7 @@ inline const vector2& structured_grid_cell::vertex(std::size_t i) const {
             return parent.vertices[lower_left + parent.nj];
         case 2:
             return parent.vertices[lower_left + parent.nj + 1];
-        case 3:
+        default:
             return parent.vertices[lower_left + 1];
     }
     // TODO: test alternative implementation
@@ -291,6 +294,8 @@ structured_grid make_cartesian_grid(
     vector2 yrange,  // {ymin, ymax}
     std::size_t nx,  // Number of points in x
     std::size_t ny   // Number of points in y
-    );
+);
 
 }  // namespace jflow
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef JFLOW_EULER_HPP
+#define JFLOW_EULER_HPP
+
 #include "jflow.hpp"
 #include <array>
 
@@ -38,3 +41,5 @@ struct perfect_gas {
 };
 
 }  // namespace jflow
+
+#endif

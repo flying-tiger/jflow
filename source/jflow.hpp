@@ -1,3 +1,6 @@
+#ifndef JFLOW_HPP
+#define JFLOW_HPP
+
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <stdexcept>
@@ -66,3 +69,5 @@ inline double cross(const vector2& x, const vector2& y) {
 //}
 
 }  // namespace jflow
+
+#endif
