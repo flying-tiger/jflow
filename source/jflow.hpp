@@ -3,6 +3,7 @@
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
+#include <array>
 #include <stdexcept>
 #include <string>
 
@@ -11,6 +12,9 @@ namespace jflow {
 //-----------------------------------------------------------------------
 // Vocabulary Types
 //-----------------------------------------------------------------------
+using size2 = std::array<std::size_t, 2>;
+using size3 = std::array<std::size_t, 2>;
+
 using vector2 = Eigen::Matrix<double, 2, 1>;
 using vector3 = Eigen::Matrix<double, 3, 1>;
 using vector4 = Eigen::Matrix<double, 4, 1>;
