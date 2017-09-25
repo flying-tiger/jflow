@@ -1,0 +1,18 @@
+﻿---
+BasedOnStyle: WebKit
+AccessModifierOffset: '-2'
+AlignAfterOpenBracket: AlwaysBreak
+AlignConsecutiveAssignments: 'true'
+AlignTrailingComments: 'true'
+AllowShortFunctionsOnASingleLine: Empty
+AlwaysBreakTemplateDeclarations: 'true'
+BinPackArguments: 'true'
+BinPackParameters: 'true'
+BreakBeforeBraces: Attach
+BreakConstructorInitializersBeforeComma: 'true'
+ColumnLimit: '100'
+IndentCaseLabels: 'true'
+SortIncludes: 'true'
+SpacesBeforeTrailingComments: '2'
+
+...
