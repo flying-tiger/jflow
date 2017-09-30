@@ -5,40 +5,40 @@
 namespace jflow {
 
 void structured_grid::init_area_vectors() {
-    _iface_area_vectors.clear();
-    _iface_area_vectors.reserve(num_iface());
+    iface_area_vectors_.clear();
+    iface_area_vectors_.reserve(num_iface());
     for (auto n = 0u; n < num_iface(); ++n) {
-        auto f   = iface(compute_iface_coordinates(n));
-        auto& v0 = f.vertex(0);
-        auto& v1 = f.vertex(1);
-        _iface_area_vectors.push_back({ -(v1[1] - v0[1]), v1[0] - v0[0] });
+        auto f  = iface(compute_iface_coordinates(n));
+        auto v0 = f.vertex(0);
+        auto v1 = f.vertex(1);
+        iface_area_vectors_.push_back({ -(v1[1] - v0[1]), v1[0] - v0[0] });
     }
-    _jface_area_vectors.clear();
-    _jface_area_vectors.reserve(num_jface());
+    jface_area_vectors_.clear();
+    jface_area_vectors_.reserve(num_jface());
     for (auto n = 0u; n < num_jface(); ++n) {
-        auto f   = jface(compute_jface_coordinates(n));
-        auto& v0 = f.vertex(0);
-        auto& v1 = f.vertex(1);
-        _jface_area_vectors.push_back({ -(v1[1] - v0[1]), v1[0] - v0[0] });
+        auto f  = jface(compute_jface_coordinates(n));
+        auto v0 = f.vertex(0);
+        auto v1 = f.vertex(1);
+        jface_area_vectors_.push_back({ -(v1[1] - v0[1]), v1[0] - v0[0] });
     }
 }
 
 void structured_grid::init_cell_volumes() {
-    _cell_volumes.clear();
-    _cell_volumes.reserve(num_cell());
+    cell_volumes_.clear();
+    cell_volumes_.reserve(num_cell());
     for (auto n = 0u; n < num_cell(); ++n) {
 
         // Shorthand
-        auto c   = cell(compute_cell_coordinates(n));
-        auto& v0 = c.vertex(0);
-        auto& v1 = c.vertex(1);
-        auto& v2 = c.vertex(2);
-        auto& v3 = c.vertex(3);
+        auto c  = cell(compute_cell_coordinates(n));
+        auto v0 = c.vertex(0);
+        auto v1 = c.vertex(1);
+        auto v2 = c.vertex(2);
+        auto v3 = c.vertex(3);
 
         // This calculation of the volume (really the area in 2D) is exact
         // when all four vertices are co-planar. Don't use this to compute
         // the area of a general 3D quadrilateral!
-        _cell_volumes.push_back(0.5 * (cross(v1 - v0, v3 - v0) + cross(v3 - v2, v1 - v2)));
+        cell_volumes_.push_back(0.5 * (cross(v1 - v0, v3 - v0) + cross(v3 - v2, v1 - v2)));
     }
 }
 

@@ -25,7 +25,7 @@ TEST_CASE("test structured_grid class") {
     std::size_t nx = 5, ny = 3;
     auto grid = jflow::make_cartesian_grid(xrange, yrange, { nx, ny });
 
-    SECTION("Test vertex indexing via (i,j) pairs") {
+    SECTION("Test vertex indexing via (i,j) coordinates") {
         REQUIRE((grid.vertex(2, 1) == vec2{ 0.0, 0.0 }));
         REQUIRE((grid.vertex(0, 2) == vec2{ -2.0, 1.0 }));
         REQUIRE((grid.vertex(4, 0) == vec2{ 2.0, -1.0 }));
@@ -35,7 +35,7 @@ TEST_CASE("test structured_grid class") {
         REQUIRE_THROWS(grid.vertex(5, 0));
     }
 
-    SECTION("Test iface indexing (linear)") {
+    SECTION("Test iface indexing via (i,j) coordinates)") {
         // This *looks* backwards but is correct. We want the edge tangent
         // vector (t = v(1)-v(0)) cross the the edge normal vector to yield
         // the out-of-plane vector via righ-hand-rule. To achieve this,
@@ -50,7 +50,7 @@ TEST_CASE("test structured_grid class") {
         REQUIRE_THROWS(grid.iface(0, 2));
     }
 
-    SECTION("Test jface indexing (linear)") {
+    SECTION("Test jface indexing via (i,j) coordinates)") {
         REQUIRE((grid.jface(0, 0).vertex(0) == grid.vertex(0, 0)));
         REQUIRE((grid.jface(0, 0).vertex(1) == grid.vertex(1, 0)));
         REQUIRE((grid.jface(3, 2).vertex(0) == grid.vertex(3, 2)));
@@ -68,7 +68,7 @@ TEST_CASE("test structured_grid class") {
         REQUIRE((grid.jface(3, 2).area_vector() == vec2{ 0.0, 1.0 }));
     }
 
-    SECTION("Test cell indexing (linear)") {
+    SECTION("Test cell indexing via (i,j) coordinates)") {
         REQUIRE((grid.cell(0, 0).vertex(0) == grid.vertex(0, 0)));
         REQUIRE((grid.cell(2, 1).vertex(2) == grid.vertex(3, 2)));
         REQUIRE_THROWS((grid.cell(-1, 0)));
@@ -88,8 +88,15 @@ TEST_CASE("test structured_grid class") {
         REQUIRE_THROWS((grid.cell(0, 0).jface(2)));
     }
 
-    SECTION("Test cell volume calculation") {
-        REQUIRE((grid.cell(0, 0).volume() == 1.0));
-        REQUIRE((grid.cell(3, 1).volume() == 1.0));
-    }
+    // SECTION("Test cell volume calculation") {
+    //    REQUIRE((grid.cell(0, 0).volume() == 1.0));
+    //    REQUIRE((grid.cell(3, 1).volume() == 1.0));
+    //}
+
+    // SECTION("Test range objects") {
+    //    auto ibegin = grid.ifaces().begin();
+    //    auto iend   = grid.ifaces().end();
+    //    REQUIRE(grid.iface(0, 0) == *ibegin);
+    //    REQUIRE(grid.iface(4, 1) == *iend);
+    //}
 }
