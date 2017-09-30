@@ -27,8 +27,6 @@ void structured_grid::init_cell_volumes() {
     cell_volumes_.clear();
     cell_volumes_.reserve(num_cell());
     for (auto n = 0u; n < num_cell(); ++n) {
-
-        // Shorthand
         auto c  = cell(compute_cell_coordinates(n));
         auto v0 = c.vertex(0);
         auto v1 = c.vertex(1);

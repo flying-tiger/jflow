@@ -10,8 +10,6 @@
 namespace jflow {
 
 //----------------------------------------------------------------------------------
-// Helper Classes
-//----------------------------------------------------------------------------------
 // Design Note: Right now, iface and jface are two different types. This
 // will be a problem when we implement iterators that loop over all faces
 // in a memory-efficient order because we will want to interleave ifaces
@@ -36,63 +34,6 @@ namespace jflow {
 //      before calling any methods. However, something like this may be
 //      inevitable once we get tri faces in there...
 //----------------------------------------------------------------------------------
-class structured_grid;
-
-class structured_grid_iface {
-    friend structured_grid;
-
-  public:
-    bool operator==(const structured_grid_iface& other) const;
-    vector2 area_vector() const;
-    vector2 vertex(std::size_t n) const;
-
-  private:
-    // Only create object via structured_grid::iface()
-    structured_grid_iface(const structured_grid& parent, std::size_t id)
-        : parent_(parent)
-        , id_(id) {}
-
-    const structured_grid& parent_;  // Parent grid containing this face
-    const std::size_t id_;           // Location in the set of i-faces
-};
-
-class structured_grid_jface {
-    friend structured_grid;
-
-  public:
-    bool operator==(const structured_grid_jface& other) const;
-    vector2 area_vector() const;
-    vector2 vertex(std::size_t n) const;
-
-  private:
-    // Only create object via structured_grid::jface()
-    structured_grid_jface(const structured_grid& parent, std::size_t id)
-        : parent_(parent)
-        , id_(id) {}
-
-    const structured_grid& parent_;  // Parent grid containing this face
-    const std::size_t id_;           // Location in the set of i-faces
-};
-
-class structured_grid_cell {
-    friend structured_grid;
-
-  public:
-    bool operator==(const structured_grid_cell& other) const;
-    vector2 vertex(std::size_t i) const;
-    structured_grid_iface iface(std::size_t n) const;
-    structured_grid_jface jface(std::size_t n) const;
-    double volume() const;
-
-  private:
-    // Only create objects via structured_grid::cell()
-    structured_grid_cell(const structured_grid& parent, std::size_t id)
-        : parent_(parent)
-        , id_(id) {}
-
-    const structured_grid& parent_;  // Parent grid containing this face
-    const std::size_t id_;           // Location in the set of cells
-};
 
 //----------------------------------------------------------------------------------
 // Main Class
@@ -119,11 +60,50 @@ class structured_grid_cell {
 //
 //----------------------------------------------------------------------------------
 class structured_grid {
-    friend structured_grid_cell;
-    friend structured_grid_iface;
-    friend structured_grid_jface;
 
-    // TODO: Add iterator protocols
+  private:
+    // Helper classes representing grid elements
+    class iface_t {
+      public:
+        iface_t(const structured_grid& parent, std::size_t id)
+            : parent_(parent)
+            , id_(id) {}
+        bool operator==(const iface_t& other) const;
+        vector2 area_vector() const;
+        vector2 vertex(std::size_t n) const;
+
+      private:
+        const structured_grid& parent_;  // Parent grid containing this face
+        const std::size_t id_;           // Location in the set of i-faces
+    };
+    class jface_t {
+      public:
+        jface_t(const structured_grid& parent, std::size_t id)
+            : parent_(parent)
+            , id_(id) {}
+        bool operator==(const jface_t& other) const;
+        vector2 area_vector() const;
+        vector2 vertex(std::size_t n) const;
+
+      private:
+        const structured_grid& parent_;  // Parent grid containing this face
+        const std::size_t id_;           // Location in the set of i-faces
+    };
+    class cell_t {
+      public:
+        cell_t(const structured_grid& parent, std::size_t id)
+            : parent_(parent)
+            , id_(id) {}
+        bool operator==(const cell_t& other) const;
+        vector2 vertex(std::size_t i) const;
+        iface_t iface(std::size_t n) const;
+        jface_t jface(std::size_t n) const;
+        double volume() const;
+
+      private:
+        const structured_grid& parent_;  // Parent grid containing this face
+        const std::size_t id_;           // Location in the set of cells
+    };
 
   public:
     structured_grid(size2 size, std::vector<vector2> vertices)
@@ -160,10 +140,10 @@ class structured_grid {
     std::size_t size_cell(std::size_t dim) const {
         return size_cell_[dim];
     }
-    structured_grid_cell cell(size2 coordinates) const {
-        return structured_grid_cell(*this, compute_cell_id(coordinates));
+    cell_t cell(size2 coordinates) const {
+        return cell_t(*this, compute_cell_id(coordinates));
     }
-    structured_grid_cell cell(std::size_t i, std::size_t j) const {
+    cell_t cell(std::size_t i, std::size_t j) const {
         return cell({ i, j });
     }
 
@@ -173,10 +153,10 @@ class structured_grid {
     std::size_t size_iface(std::size_t dim) const {
         return size_iface_[dim];
     }
-    structured_grid_iface iface(size2 coordinates) const {
-        return structured_grid_iface(*this, compute_iface_id(coordinates));
+    iface_t iface(size2 coordinates) const {
+        return iface_t(*this, compute_iface_id(coordinates));
     }
-    structured_grid_iface iface(std::size_t i, std::size_t j) const {
+    iface_t iface(std::size_t i, std::size_t j) const {
         return iface({ i, j });
     }
 
@@ -186,10 +166,10 @@ class structured_grid {
     std::size_t size_jface(std::size_t dim) const {
         return size_jface_[dim];
     }
-    structured_grid_jface jface(size2 coordinates) const {
-        return structured_grid_jface(*this, compute_jface_id(coordinates));
+    jface_t jface(size2 coordinates) const {
+        return jface_t(*this, compute_jface_id(coordinates));
     }
-    structured_grid_jface jface(std::size_t i, std::size_t j) const {
+    jface_t jface(std::size_t i, std::size_t j) const {
         return jface({ i, j });
     }
 
@@ -247,10 +227,10 @@ class structured_grid {
 //----------------------------------------------------------------------------------
 // Helper Class Implementation (Inline)
 //----------------------------------------------------------------------------------
-inline bool structured_grid_cell::operator==(const structured_grid_cell& other) const {
+inline bool structured_grid::cell_t::operator==(const cell_t& other) const {
     return &parent_ == &other.parent_ && id_ == other.id_;
 }
-inline vector2 structured_grid_cell::vertex(std::size_t n) const {
+inline vector2 structured_grid::cell_t::vertex(std::size_t n) const {
     check_precondition(0 <= n && n < 4, "Vertex index is out of range");
     auto [i, j] = parent_.compute_cell_coordinates(id_);
     switch (n) {
@@ -264,39 +244,39 @@ inline vector2 structured_grid_cell::vertex(std::size_t n) const {
             return parent_.vertex(i, j + 1);
     }
 }
-inline structured_grid_iface structured_grid_cell::iface(std::size_t n) const {
+inline structured_grid::iface_t structured_grid::cell_t::iface(std::size_t n) const {
     check_precondition(0 <= n && n < 2, "Iface index is out of range.");
     auto [i, j] = parent_.compute_cell_coordinates(id_);
     return parent_.iface(i + n, j);
 }
-inline structured_grid_jface structured_grid_cell::jface(std::size_t n) const {
+inline structured_grid::jface_t structured_grid::cell_t::jface(std::size_t n) const {
     check_precondition(0 <= n && n < 2, "Jface index is out of range.");
     auto [i, j] = parent_.compute_cell_coordinates(id_);
     return parent_.jface(i, j + n);
 }
-inline double structured_grid_cell::volume() const {
+inline double structured_grid::cell_t::volume() const {
     return parent_.cell_volumes_[id_];
 }
 
-inline bool structured_grid_iface::operator==(const structured_grid_iface& other) const {
+inline bool structured_grid::iface_t::operator==(const iface_t& other) const {
     return &parent_ == &other.parent_ && id_ == other.id_;
 }
-inline vector2 structured_grid_iface::area_vector() const {
+inline vector2 structured_grid::iface_t::area_vector() const {
     return parent_.iface_area_vectors_[id_];
 }
-inline vector2 structured_grid_iface::vertex(std::size_t n) const {
+inline vector2 structured_grid::iface_t::vertex(std::size_t n) const {
     check_precondition(0 <= n && n < 2, "Vertex index is out of range.");
     auto [i, j] = parent_.compute_iface_coordinates(id_);
     return parent_.vertex(i, j + 1 - n);
 }
 
-inline bool structured_grid_jface::operator==(const structured_grid_jface& other) const {
+inline bool structured_grid::jface_t::operator==(const jface_t& other) const {
     return &parent_ == &other.parent_ && id_ == other.id_;
 }
-inline vector2 structured_grid_jface::area_vector() const {
+inline vector2 structured_grid::jface_t::area_vector() const {
     return parent_.jface_area_vectors_[id_];
 }
-inline vector2 structured_grid_jface::vertex(std::size_t n) const {
+inline vector2 structured_grid::jface_t::vertex(std::size_t n) const {
     check_precondition(0 <= n && n < 2, "Vertex index out of range.");
     auto [i, j] = parent_.compute_jface_coordinates(id_);
     return parent_.vertex(i + n, j);
