@@ -4,22 +4,22 @@
 
 namespace jflow {
 
-void structured_grid::init_area_vectors() {
-    iface_area_vectors_.clear();
-    iface_area_vectors_.reserve(num_iface());
+void structured_grid::init_face_areas() {
+    iface_areas_.clear();
+    iface_areas_.reserve(num_iface());
     for (auto n = 0u; n < num_iface(); ++n) {
         auto f  = iface(compute_iface_coordinates(n));
         auto v0 = f.vertex(0);
         auto v1 = f.vertex(1);
-        iface_area_vectors_.push_back({ -(v1[1] - v0[1]), v1[0] - v0[0] });
+        iface_areas_.push_back({ -(v1[1] - v0[1]), v1[0] - v0[0] });
     }
-    jface_area_vectors_.clear();
-    jface_area_vectors_.reserve(num_jface());
+    jface_areas_.clear();
+    jface_areas_.reserve(num_jface());
     for (auto n = 0u; n < num_jface(); ++n) {
         auto f  = jface(compute_jface_coordinates(n));
         auto v0 = f.vertex(0);
         auto v1 = f.vertex(1);
-        jface_area_vectors_.push_back({ -(v1[1] - v0[1]), v1[0] - v0[0] });
+        jface_areas_.push_back({ -(v1[1] - v0[1]), v1[0] - v0[0] });
     }
 }
 
