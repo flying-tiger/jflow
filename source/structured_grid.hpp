@@ -245,33 +245,32 @@ class structured_grid::range {
 template <typename T>
 class structured_grid::range<typename T>::iterator {
   public:
-    iterator(const structured_grid& parent, std::size_t current, std::size_t stride)
-        : parent_(parent)
-        , current_(current)
-        , stride_(stride) {}
+    iterator(const range<T>& range, std::size_t current)
+        : range_(range)
+        , current_(current) {}
     auto operator++() -> iterator& {
-        current_ += stride_;
+        current_ += range_.stride_;
         return *this;
     }
     auto operator--() -> iterator& {
-        current_ -= stride_;
+        current_ -= range_.stride_;
         return *this;
     }
     auto operator==(const iterator& other) const -> bool {
-        check_precondition(&parent_ == &other.parent_, "Element are from different grids.");
+        check_precondition(
+            &range_.parent_ == &other.range_.parent_, "Element are from different grids.");
         return current_ == other.current_;
     }
     auto operator!=(const iterator& other) const -> bool {
         return !(*this == other);
     }
     auto operator*() const -> T {
-        return (T(parent_, current_));
+        return (T(range_.parent_, current_));
     }
 
   private:
-    const structured_grid& parent_;  // Parent grid
-    std::size_t current_;            // Current position in the set of elements
-    const std::size_t stride_;       // Stride through the set of elements
+    const range<T>& range_;  // Parent range
+    std::size_t current_;    // Current position in the set of elements
 };
 
 //----------------------------------------------------------------------------------
@@ -397,11 +396,11 @@ inline auto structured_grid::jface_handle::vertex(std::size_t n) const -> vector
 }
 template <typename T>
 inline auto structured_grid::range<T>::begin() -> iterator {
-    return iterator(parent_, start_, stride_);
+    return iterator(*this, start_);
 }
 template <typename T>
 inline auto structured_grid::range<T>::end() -> iterator {
-    return iterator(parent_, end_, stride_);
+    return iterator(*this, end_);
 }
 
 }  // namespace jflow

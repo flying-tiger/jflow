@@ -22,7 +22,6 @@ auto structured_grid::init_face_areas() -> void {
         jface_areas_.push_back({ -(v1[1] - v0[1]), v1[0] - v0[0] });
     }
 }
-
 auto structured_grid::init_cell_volumes() -> void {
     cell_volumes_.clear();
     cell_volumes_.reserve(num_cell());
@@ -39,8 +38,7 @@ auto structured_grid::init_cell_volumes() -> void {
         cell_volumes_.push_back(0.5 * (cross(v1 - v0, v3 - v0) + cross(v3 - v2, v1 - v2)));
     }
 }
-
-auto make_cartesian_grid(vector2 xrange,  vector2 yrange, size2 size) -> structured_grid {
+auto make_cartesian_grid(vector2 xrange, vector2 yrange, size2 size) -> structured_grid {
     check_precondition(size[0] >= 2, "nx is too small.");
     check_precondition(size[1] >= 2, "ny is too small.");
     std::vector<vector2> vertices;
