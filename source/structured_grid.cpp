@@ -4,7 +4,7 @@
 
 namespace jflow {
 
-void structured_grid::init_face_areas() {
+auto structured_grid::init_face_areas() -> void {
     iface_areas_.clear();
     iface_areas_.reserve(num_iface());
     for (auto n = 0u; n < num_iface(); ++n) {
@@ -23,7 +23,7 @@ void structured_grid::init_face_areas() {
     }
 }
 
-void structured_grid::init_cell_volumes() {
+auto structured_grid::init_cell_volumes() -> void {
     cell_volumes_.clear();
     cell_volumes_.reserve(num_cell());
     for (auto n = 0u; n < num_cell(); ++n) {
@@ -40,11 +40,7 @@ void structured_grid::init_cell_volumes() {
     }
 }
 
-structured_grid make_cartesian_grid(
-    vector2 xrange,  // {xmin, xmax}
-    vector2 yrange,  // {ymin, ymax}
-    size2 size       // {nx, ny}
-) {
+auto make_cartesian_grid(vector2 xrange,  vector2 yrange, size2 size) -> structured_grid {
     check_precondition(size[0] >= 2, "nx is too small.");
     check_precondition(size[1] >= 2, "ny is too small.");
     std::vector<vector2> vertices;
