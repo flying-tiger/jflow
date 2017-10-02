@@ -1,22 +1,18 @@
 #include "structured_grid.hpp"
 
-// TODO: Replace indexed loops over iface, jface, cell with iterator traversal
-
 namespace jflow {
 
 auto structured_grid::init_face_areas() -> void {
     iface_areas_.clear();
     iface_areas_.reserve(num_iface());
-    for (auto n = 0u; n < num_iface(); ++n) {
-        auto f  = iface(compute_iface_coordinates(n));
+    for (const auto& f : ifaces()) {
         auto v0 = f.vertex(0);
         auto v1 = f.vertex(1);
         iface_areas_.push_back({ -(v1[1] - v0[1]), v1[0] - v0[0] });
     }
     jface_areas_.clear();
     jface_areas_.reserve(num_jface());
-    for (auto n = 0u; n < num_jface(); ++n) {
-        auto f  = jface(compute_jface_coordinates(n));
+    for (const auto& f : jfaces()) {
         auto v0 = f.vertex(0);
         auto v1 = f.vertex(1);
         jface_areas_.push_back({ -(v1[1] - v0[1]), v1[0] - v0[0] });
@@ -25,8 +21,7 @@ auto structured_grid::init_face_areas() -> void {
 auto structured_grid::init_cell_volumes() -> void {
     cell_volumes_.clear();
     cell_volumes_.reserve(num_cell());
-    for (auto n = 0u; n < num_cell(); ++n) {
-        auto c  = cell(compute_cell_coordinates(n));
+    for (const auto& c : cells()) {
         auto v0 = c.vertex(0);
         auto v1 = c.vertex(1);
         auto v2 = c.vertex(2);

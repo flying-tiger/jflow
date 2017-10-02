@@ -63,6 +63,19 @@ TEST_CASE("test structured_grid class") {
         REQUIRE((grid.jface(0, 0).area() == vec2{ 0.0, 1.0 }));
         REQUIRE((grid.jface(3, 2).area() == vec2{ 0.0, 1.0 }));
     }
+    SECTION("Test iface/jface cell() accessor") {
+        REQUIRE((grid.iface(1, 1).cell(0) == grid.cell(0, 1)));
+        REQUIRE((grid.iface(1, 1).cell(1) == grid.cell(1, 1)));
+        REQUIRE_THROWS(grid.iface(0, 0).cell(0));
+        REQUIRE_THROWS(grid.iface(4, 0).cell(1));
+        REQUIRE_THROWS(grid.iface(1, 1).cell(2));
+
+        REQUIRE((grid.jface(1, 1).cell(0) == grid.cell(1, 0)));
+        REQUIRE((grid.jface(1, 1).cell(1) == grid.cell(1, 1)));
+        REQUIRE_THROWS(grid.jface(0, 0).cell(0));
+        REQUIRE_THROWS(grid.jface(2, 2).cell(1));
+        REQUIRE_THROWS(grid.jface(1, 1).cell(2));
+    }
     SECTION("Test cell indexing via (i,j) coordinates)") {
         REQUIRE((grid.cell(0, 0).vertex(0) == grid.vertex(0, 0)));
         REQUIRE((grid.cell(2, 1).vertex(2) == grid.vertex(3, 2)));
@@ -127,28 +140,79 @@ TEST_CASE("test structured_grid class") {
         --jend;
         REQUIRE(grid.jface(3, 1) == *jend);
     }
-    SECTION("Test range-based for looping") {
+    SECTION("Test basic range-based for looping") {
 
-        int sum;
+        std::size_t sum;
 
         sum = 0;
         for (const auto& v : grid.vertices())
-            sum += 1;
+            ++sum;
         REQUIRE(sum == grid.num_vertex());
 
         sum = 0;
         for (const auto& c : grid.cells())
-            sum += 1;
+            ++sum;
         REQUIRE(sum == grid.num_cell());
 
         sum = 0;
         for (const auto& f : grid.ifaces())
-            sum += 1;
+            ++sum;
         REQUIRE(sum == grid.num_iface());
 
         sum = 0;
         for (const auto& f : grid.jfaces())
-            sum += 1;
+            ++sum;
         REQUIRE(sum == grid.num_jface());
+    }
+    SECTION("Test looping over min/max boundaries") {
+        std::size_t sum, ans;
+
+        sum = ans = 0;
+        ans += grid.iface(0, 0).id();
+        ans += grid.iface(0, 1).id();
+        for (const auto& f : grid.min_ifaces()) {
+            sum += f.id();
+        }
+        REQUIRE(sum == ans);
+
+        sum = ans = 0;
+        ans += grid.iface(4, 0).id();
+        ans += grid.iface(4, 1).id();
+        for (const auto& f : grid.max_ifaces()) {
+            sum += f.id();
+        }
+        REQUIRE(sum == ans);
+
+        sum = 0;
+        for (const auto& f : grid.interior_ifaces()) {
+            ++sum;
+        }
+        REQUIRE(sum == 6);
+
+        sum = ans = 0;
+        ans += grid.jface(0, 0).id();
+        ans += grid.jface(1, 0).id();
+        ans += grid.jface(2, 0).id();
+        ans += grid.jface(3, 0).id();
+        for (const auto& f : grid.min_jfaces()) {
+            sum += f.id();
+        }
+        REQUIRE(sum == ans);
+
+        sum = ans = 0;
+        ans += grid.jface(0, 2).id();
+        ans += grid.jface(1, 2).id();
+        ans += grid.jface(2, 2).id();
+        ans += grid.jface(3, 2).id();
+        for (const auto& f : grid.max_jfaces()) {
+            sum += f.id();
+        }
+        REQUIRE(sum == ans);
+
+        sum = 0;
+        for (const auto& f : grid.interior_jfaces()) {
+            ++sum;
+        }
+        REQUIRE(sum == 4);
     }
 }

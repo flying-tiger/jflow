@@ -6,8 +6,8 @@ AlignConsecutiveAssignments: 'true'
 AlignTrailingComments: 'true'
 AllowShortFunctionsOnASingleLine: Empty
 AlwaysBreakTemplateDeclarations: 'true'
-BinPackArguments: 'true'
-BinPackParameters: 'true'
+#BinPackArguments: 'true'
+#BinPackParameters: 'true'
 BreakBeforeBraces: Attach
 BreakConstructorInitializersBeforeComma: 'true'
 ColumnLimit: '100'
