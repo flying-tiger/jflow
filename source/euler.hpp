@@ -23,19 +23,18 @@ struct euler {
     };
 
     // Function for debug/test
-    static flux compute_flux(const state& q, const vector2& n);
-    static flux compute_jump_flux(const state& ql, const state& qr, const vector2& n);
+    static auto compute_flux(const state& q, const vector2& n) -> flux;
+    static auto compute_freestream_flux(const state& q, const vector2& n) -> flux;
+    static auto compute_wall_flux(const state& q, const vector2& n) -> flux;
+    static auto compute_jump_flux(const state& ql, const state& qr, const vector2& n) -> flux;
 };
 
 struct perfect_gas {
-
     static const double gamma;
-
-    static double compute_pressure(double e, double rho) {
+    static auto compute_pressure(double e, double rho) -> double {
         return (gamma - 1) * rho * e;
     }
-
-    static double compute_sound_speed(double e, double rho) {
+    static auto compute_sound_speed(double e, double rho) -> double {
         return std::sqrt(gamma * (gamma - 1) * e);
     }
 };
