@@ -1,5 +1,9 @@
 #include "catch.hpp"
 #include "structured_grid.hpp"
+#include <cmath>
+#include <cstdio>
+#include <filesystem>
+#include <iostream>
 
 TEST_CASE("test structured_grid class") {
     // Creates a simple 5-by-3 point test gird and verifies that our
@@ -95,8 +99,8 @@ TEST_CASE("test structured_grid class") {
         REQUIRE_THROWS((grid.cell(0, 0).jface(2)));
     }
     SECTION("Test cell volume calculation") {
-        REQUIRE((grid.cell(0, 0).volume() == 1.0));
-        REQUIRE((grid.cell(3, 1).volume() == 1.0));
+        REQUIRE((grid.cell(0, 0).volume() == Approx(1.0)));
+        REQUIRE((grid.cell(3, 1).volume() == Approx(1.0)));
     }
     SECTION("Test range/iterator objects") {
 
@@ -215,4 +219,44 @@ TEST_CASE("test structured_grid class") {
         }
         REQUIRE(sum == 4);
     }
+    SECTION("Test grid serialization") {
+
+        // Write and reload grid
+        std::string filename = std::tmpnam(nullptr);
+        grid.write(filename);
+        auto new_grid = jflow::structured_grid::read(filename);
+
+        // Verify serialized grid is similar to current
+        double old_volume = 0.0;
+        for (auto cell : grid.cells()) {
+            old_volume += cell.volume();
+        }
+        double new_volume = 0.0;
+        for (auto cell : new_grid.cells()) {
+            new_volume += cell.volume();
+        }
+        REQUIRE(old_volume == Approx(new_volume));
+    };
+}
+
+TEST_CASE("test elliptic grid generator") {
+
+    using vec2 = jflow::vector2;
+    using jflow::constants::pi;
+
+    // Grid parameters
+    double a        = 2.0;
+    vec2 mu_range   = { 0.0, 1.0 };
+    vec2 nu_range   = { pi / 6, pi / 3 };
+    auto exact_area = pi * a * a * sinh(2.0) / 24;
+
+    // Create the grid
+    auto grid = jflow::make_elliptic_grid(a, mu_range, nu_range, { 21, 17 });
+
+    // Verify the volume (area for 2D) is what we expect
+    double volume = 0.0;
+    for (auto cell : grid.cells()) {
+        volume += cell.volume();
+    }
+    REQUIRE(volume == Approx(exact_area).margin(0.001));
 }

@@ -21,6 +21,7 @@ add_executable(test_jflow
     test/test_jflow.cpp
     test/test_structured_grid.cpp
     source/euler.cpp
+    source/jflow.cpp
     source/structured_grid.cpp
 )
 target_include_directories(test_jflow

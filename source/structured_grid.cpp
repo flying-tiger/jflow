@@ -1,6 +1,11 @@
 #include "structured_grid.hpp"
+#include <cmath>
+#include <fstream>
+#include <iomanip>
 
 namespace jflow {
+
+// TODO: Optimize read/write routines; try to make them cache-friendly
 
 auto structured_grid::init_face_areas() -> void {
     iface_areas_.clear();
@@ -33,6 +38,82 @@ auto structured_grid::init_cell_volumes() -> void {
         cell_volumes_.push_back(0.5 * (cross(v1 - v0, v3 - v0) + cross(v3 - v2, v1 - v2)));
     }
 }
+auto structured_grid::read(const std::string& filename) -> structured_grid {
+    return structured_grid::read(std::ifstream(filename));
+}
+auto structured_grid::read(std::istream& in) -> structured_grid {
+    // Read from plot3d format, which is packed column-major.
+
+    std::size_t nblock;
+    size2 size;
+    in >> nblock;
+    in >> size[0] >> size[1];
+    std::vector<vector2> vertices(size[0] * size[1], vector2{ 0.0, 0.0 });
+
+    // X-coordinate array
+    for (auto j = 0u; j < size[1]; ++j) {
+        for (auto i = 0u; i < size[0]; ++i) {
+            in >> vertices[i * size[1] + j][0];
+        }
+    }
+
+    // Y-coordindate array
+    for (auto j = 0u; j < size[1]; ++j) {
+        for (auto i = 0u; i < size[0]; ++i) {
+            in >> vertices[i * size[1] + j][1];
+        }
+    }
+
+    return structured_grid(size, std::move(vertices));
+}
+auto structured_grid::write(const std::string& filename) const -> void {
+    std::ofstream ofs(filename);
+    if (!ofs) {
+        throw runtime_error("Failure opening '" + filename + "': " + strerror(errno));
+    }
+    this->write(std::ofstream(filename));
+}
+auto structured_grid::write(std::ostream& out) const -> void {
+    // Serialize to plot3d format, which is packed column-major.
+
+    const std::size_t values_per_line = 4;
+
+    out << std::setw(15) << 1 << "\n";
+    out << std::setw(15) << size_vertex(0);
+    out << std::setw(15) << size_vertex(1);
+    out << "\n";
+    out << std::scientific << std::setprecision(15);
+
+    // X-coordinate array
+    auto counter = values_per_line;
+    for (auto j = 0u; j < size_vertex(1); ++j) {
+        for (auto i = 0u; i < size_vertex(0); ++i) {
+            out << std::setw(24) << vertex(i, j)[0];
+            if (--counter == 0) {
+                counter = values_per_line;
+                out << "\n";
+            }
+        }
+    }
+    if (counter != values_per_line) {
+        out << "\n";
+    }
+
+    // Y-coordinate array
+    counter = values_per_line;
+    for (auto j = 0u; j < size_vertex(1); ++j) {
+        for (auto i = 0u; i < size_vertex(0); ++i) {
+            out << std::setw(24) << vertex(i, j)[1];
+            if (--counter == 0) {
+                counter = values_per_line;
+                out << "\n";
+            }
+        }
+    }
+    if (counter != values_per_line) {
+        out << "\n";
+    }
+}
 auto make_cartesian_grid(vector2 xrange, vector2 yrange, size2 size) -> structured_grid {
     check_precondition(size[0] >= 2, "nx is too small.");
     check_precondition(size[1] >= 2, "ny is too small.");
@@ -44,6 +125,28 @@ auto make_cartesian_grid(vector2 xrange, vector2 yrange, size2 size) -> structur
         for (auto j = 0u; j < size[1]; ++j) {
             auto x = xrange[0] + i * dx;
             auto y = yrange[0] + j * dy;
+            vertices.push_back(vector2{ x, y });
+        }
+    }
+    return structured_grid(size, std::move(vertices));
+}
+auto make_elliptic_grid(double eccentricity, vector2 mu_range, vector2 nu_range, size2 size)
+    -> structured_grid {
+    using namespace std;
+    const auto& a = eccentricity;  // Shorthand
+    check_precondition(a >= 0, "eccentricity must be positive.");
+    check_precondition(size[0] >= 2, "nx is too small.");
+    check_precondition(size[1] >= 2, "ny is too small.");
+    vector<vector2> vertices;
+    vertices.reserve(size[0] * size[1]);
+    auto dmu = (mu_range[1] - mu_range[0]) / (size[0] - 1);
+    auto dnu = (nu_range[1] - nu_range[0]) / (size[1] - 1);
+    for (auto i = 0u; i < size[0]; ++i) {
+        for (auto j = 0u; j < size[1]; ++j) {
+            auto mu = mu_range[0] + i * dmu;
+            auto nu = nu_range[0] + j * dnu;
+            auto x  = a * cosh(mu) * cos(nu);
+            auto y  = a * sinh(mu) * sin(nu);
             vertices.push_back(vector2{ x, y });
         }
     }

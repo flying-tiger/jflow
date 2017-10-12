@@ -3,10 +3,10 @@
 
 #include "jflow.hpp"
 #include <array>
+#include <istream>
 #include <limits>
+#include <ostream>
 #include <vector>
-
-#include <iostream>
 
 namespace jflow {
 
@@ -15,7 +15,7 @@ namespace jflow {
 //----------------------------------------------------------------------------------
 // A class to represent a 2D structured grid. The figure belows shows how
 // nodes/cells/faces are numbered (c => cell, if => iface, jf => jface).
-// Numbering is column-major in the standard C/C++ fashion.
+// Numbering is "row-major" in the standard C/C++ fashion (j-index fastest).
 //
 //   j=2     2------jf=2------5------jf=5------8------jf=8------11
 //           |                |                |                |
@@ -73,6 +73,7 @@ class structured_grid {
         return vertex({ i, j });
     }
     auto vertices() const -> const std::vector<vector2>& {
+        // TODO: Have this return a range like other objects
         return vertices_;
     }
 
@@ -115,6 +116,12 @@ class structured_grid {
     auto max_jfaces() const -> range2d<jface_handle>;
     auto interior_jfaces() const -> range2d<jface_handle>;
 
+    // Serialization
+    static auto read(const std::string& filename) -> structured_grid;
+    static auto read(std::istream& in) -> structured_grid;
+    auto write(const std::string& filename) const -> void;
+    auto write(std::ostream& out) const -> void;
+
   private:
     // Initializers
     auto init_face_areas() -> void;
@@ -150,7 +157,13 @@ class structured_grid {
 auto make_cartesian_grid(
     vector2 xrange,  // {xmin, xmax}
     vector2 yrange,  // {ymin, ymax}
-    size2 size       // Number of points in x and y
+    size2 size       // Number of points in x,y
+    ) -> structured_grid;
+auto make_elliptic_grid(
+    double eccentricty,  // Linear eccentricity: distance from orgin to focus
+    vector2 mu_range,    // {mu_min, mu_max}: coordinate along the hyperbolas
+    vector2 nu_range,    // {nu_min, nu_max}: coordinate along the ellipses
+    size2 size           // Number of points in mu,nu
     ) -> structured_grid;
 
 //----------------------------------------------------------------------------------
