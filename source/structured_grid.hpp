@@ -532,7 +532,7 @@ inline auto structured_grid::range2d<T>::iterator::operator*() const -> T {
 // show up in future versions of VS. Also, right now I'm using the more complicated
 // range2d iterator even in places where a simple linear iterator would suffice.
 // The compiler might be smart enough to figure this out and optize away the unused
-// offset logic, but this might be an optimization opportunity.
+// offset logic, but this might be a place where the implementation can be refined.
 //----------------------------------------------------------------------------------
 }  // namespace jflow
 
