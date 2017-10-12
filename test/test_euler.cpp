@@ -6,6 +6,7 @@ TEST_CASE("Verify Euler flux vector calculation") {
     using namespace jflow;
 
     const double gamma = 1.4;
+    const double Rgas  = 287.0;
     const double tol   = 1e-12;
 
     // Primitive state
@@ -19,6 +20,9 @@ TEST_CASE("Verify Euler flux vector calculation") {
     const euler::state q(rho, rho * u, rho * v, rho * E);
     const euler::flux fx(rho * u, rho * u * u + p, rho * u * v, u * (rho * E + p));
     const euler::flux fy(rho * v, rho * v * u, rho * v * v + p, v * (rho * E + p));
+
+    // Configure perfect gas model
+    perfect_gas::set_gas_props(gamma, Rgas);
 
     SECTION("Verify basic flux calculation") {
         auto fx_calc = euler::compute_flux(q, { 1, 0 });
