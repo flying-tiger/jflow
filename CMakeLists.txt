@@ -1,41 +1,34 @@
-cmake_minimum_required(VERSION 3.9.0)
+cmake_minimum_required(VERSION 3.6)
+project(jflow)
 
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall")
-endif()
-if(CMAKE_CXX_COMPILER_Id STREQUAL "MSVC")
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4")
-endif()
-
-project(jflow)
-
-#-------------------------------------------------------------------------
-# Test Suite
-#-------------------------------------------------------------------------
-add_executable(test_jflow
-    test/test.cpp
-    test/test_euler.cpp
-    test/test_jflow.cpp
-    test/test_structured_grid.cpp
-    source/euler.cpp
-    source/jflow.cpp
-    source/structured_grid.cpp
-)
-target_include_directories(test_jflow
-  PRIVATE
-    source
-    extern/catch/single_include
-    extern/eigen
-)
-set_target_properties(test_jflow
-  PROPERTIES
+set(JFLOW_COMMON_PROPERTIES
     CXX_EXTENSIONS OFF
     CXX_STANDARD_REQUIRED ON
     CXX_STANDARD 17
 )
+
+# This should eventually go in a toolchain file
 if(MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
+    set(JFLOW_COMMON_OPTIONS    
+      PUBLIC   /std:c++latest 
+      PRIVATE  /W3 /WX
+    )
+    set(JFLOW_COMMON_DEFINES
+      PRIVATE _CRT_SECURE_NO_WARNINGS
+    )
+else()
+    set(JFLOW_COMMON_OPTIONS 
+      PRIVATE -W -Wall -Werror
+    )
+    set(JFLOW_COMMON_DEFINES)
 endif()
+
+add_subdirectory(extern)
+add_subdirectory(jflow_lib)
+add_subdirectory(jflow_test)
+
+
+
