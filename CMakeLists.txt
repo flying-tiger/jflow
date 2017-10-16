@@ -28,6 +28,7 @@ endif()
 
 add_subdirectory(extern)
 add_subdirectory(jflow_lib)
+add_subdirectory(jflow_main)
 add_subdirectory(jflow_test)
 
 
