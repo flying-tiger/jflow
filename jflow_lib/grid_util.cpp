@@ -1,4 +1,4 @@
-#include "grid_util.hpp"
+#include "jflow/grid_util.hpp"
 #include <cmath>
 
 namespace jflow {

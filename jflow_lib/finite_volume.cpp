@@ -1,4 +1,4 @@
-#include "finite_volume.hpp"
+#include "jflow/finite_volume.hpp"
 
 namespace jflow {
 

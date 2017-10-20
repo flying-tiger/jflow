@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "euler.hpp"
+#include "jflow/euler.hpp"
 
 TEST_CASE("Verify Euler flux vector calculation") {
 

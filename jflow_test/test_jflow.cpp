@@ -1,10 +1,10 @@
 #include "catch.hpp"
-#include "jflow.hpp"
+#include "jflow/jflow.hpp"
 
 #ifdef NDEBUG
-  #define REQUIRE_THROWS_IF_DEBUG  REQUIRE_NOTHROW
+#define REQUIRE_THROWS_IF_DEBUG REQUIRE_NOTHROW
 #else
-  #define REQUIRE_THROWS_IF_DEBUG  REQUIRE_THROWS
+#define REQUIRE_THROWS_IF_DEBUG REQUIRE_THROWS
 #endif
 
 TEST_CASE("test check_precondition function") {

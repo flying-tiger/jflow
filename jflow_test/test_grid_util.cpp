@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "grid_util.hpp"
+#include "jflow/grid_util.hpp"
 
 TEST_CASE("test elliptic grid generator") {
 

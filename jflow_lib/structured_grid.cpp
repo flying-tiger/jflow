@@ -1,4 +1,4 @@
-#include "structured_grid.hpp"
+#include "jflow/structured_grid.hpp"
 #include <fstream>
 #include <iomanip>
 

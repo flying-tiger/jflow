@@ -1,6 +1,6 @@
 #include "catch.hpp"
-#include "grid_util.hpp"
-#include "structured_grid.hpp"
+#include "jflow/grid_util.hpp"
+#include "jflow/structured_grid.hpp"
 #include <cmath>
 #include <cstdio>
 #include <filesystem>

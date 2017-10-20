@@ -1,4 +1,4 @@
-#include "euler.hpp"
+#include "jflow/euler.hpp"
 
 // TODO: Try implementing a smooth 'abs' and 'max' so flux is differentiable
 
