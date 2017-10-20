@@ -10,7 +10,7 @@ AlwaysBreakTemplateDeclarations: 'true'
 #BinPackParameters: 'true'
 BreakBeforeBraces: Attach
 BreakConstructorInitializersBeforeComma: 'true'
-ColumnLimit: '100'
+ColumnLimit: '96'
 IndentCaseLabels: 'true'
 SortIncludes: 'true'
 SpacesBeforeTrailingComments: '2'
