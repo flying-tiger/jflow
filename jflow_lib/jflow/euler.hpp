@@ -1,7 +1,7 @@
 #ifndef JFLOW_EULER_HPP
 #define JFLOW_EULER_HPP
 
-#include "jflow.hpp"
+#include "jflow/common.hpp"
 #include <array>
 
 namespace jflow {

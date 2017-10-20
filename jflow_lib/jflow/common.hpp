@@ -1,5 +1,5 @@
-#ifndef JFLOW_HPP
-#define JFLOW_HPP
+#ifndef JFLOW_COMMON_HPP
+#define JFLOW_COMMON_HPP
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>

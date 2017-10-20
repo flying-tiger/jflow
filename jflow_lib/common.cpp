@@ -1,4 +1,4 @@
-#include "jflow/jflow.hpp"
+#include "jflow/common.hpp"
 #include <cmath>
 
 namespace jflow {

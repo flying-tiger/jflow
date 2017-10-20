@@ -1,9 +1,9 @@
 #ifndef JFLOW_FINITE_VOLUME_HPP
 #define JFLOW_FINITE_VOLUME_HPP
 
-#include "euler.hpp"
-#include "jflow.hpp"
-#include "structured_grid.hpp"
+#include "jflow/common.hpp"
+#include "jflow/euler.hpp"
+#include "jflow/structured_grid.hpp"
 
 namespace jflow {
 

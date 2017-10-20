@@ -1,7 +1,7 @@
 #ifndef JFLOW_STRUCTURED_GRID_HPP
 #define JFLOW_STRUCTURED_GRID_HPP
 
-#include "jflow.hpp"
+#include "jflow/common.hpp"
 #include <array>
 #include <istream>
 #include <limits>
@@ -466,13 +466,15 @@ inline auto structured_grid::range2d<T>::iterator::operator--() -> iterator& {
     return *this;
 }
 template <typename T>
-inline auto structured_grid::range2d<T>::iterator::operator==(const iterator& other) const -> bool {
+inline auto structured_grid::range2d<T>::iterator::operator==(const iterator& other) const
+    -> bool {
     check_precondition(
         &range_.parent_ == &other.range_.parent_, "Element are from different grids.");
     return current_ == other.current_;
 }
 template <typename T>
-inline auto structured_grid::range2d<T>::iterator::operator!=(const iterator& other) const -> bool {
+inline auto structured_grid::range2d<T>::iterator::operator!=(const iterator& other) const
+    -> bool {
     return !(*this == other);
 }
 template <typename T>

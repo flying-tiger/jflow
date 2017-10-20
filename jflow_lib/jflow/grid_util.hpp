@@ -1,4 +1,7 @@
-#include "structured_grid.hpp"
+#ifndef JFLOW_GRID_UTIL_HPP
+#define JFLOW_GRID_UTIL_HPP
+
+#include "jflow/structured_grid.hpp"
 
 namespace jflow {
 
@@ -25,3 +28,5 @@ auto make_hyperbolic_forebody_grid(
     ) -> structured_grid;
 */
 }  // namespace jflow
+
+#endif

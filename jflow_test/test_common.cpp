@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "jflow/jflow.hpp"
+#include "jflow/common.hpp"
 
 #ifdef NDEBUG
 #define REQUIRE_THROWS_IF_DEBUG REQUIRE_NOTHROW
