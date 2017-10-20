@@ -152,21 +152,6 @@ class structured_grid {
 };
 
 //----------------------------------------------------------------------------------
-// Grid Constuction Utilites
-//----------------------------------------------------------------------------------
-auto make_cartesian_grid(
-    vector2 xrange,  // {xmin, xmax}
-    vector2 yrange,  // {ymin, ymax}
-    size2 size       // Number of points in x,y
-    ) -> structured_grid;
-auto make_elliptic_grid(
-    double eccentricty,  // Linear eccentricity: distance from orgin to focus
-    vector2 mu_range,    // {mu_min, mu_max}: coordinate along the hyperbolas
-    vector2 nu_range,    // {nu_min, nu_max}: coordinate along the ellipses
-    size2 size           // Number of points in mu,nu
-    ) -> structured_grid;
-
-//----------------------------------------------------------------------------------
 // Helper Classes
 //----------------------------------------------------------------------------------
 class structured_grid::cell_handle {

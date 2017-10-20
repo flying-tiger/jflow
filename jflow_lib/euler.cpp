@@ -81,7 +81,7 @@ auto euler::compute_jump_flux(
     auto fr = compute_flux(qr, n);
     return 0.5 * (fl + fr - lam * (ql - qr));
 }
-auto euler::set_freestream(double vx, double vy, double p, double T) -> void {
+auto euler::set_freestream(double p, double T, double vx, double vy) -> void {
     double rho  = perfect_gas::compute_density(p, T);
     double E    = perfect_gas::compute_energy(T) + 0.5 * (vx * vx + vy * vy);
     freestream_ = { rho, rho * vx, rho * vy, rho * E };

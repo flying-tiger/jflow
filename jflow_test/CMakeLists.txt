@@ -1,6 +1,7 @@
 add_executable(jflow_test
     test.cpp
     test_euler.cpp
+    test_grid_util.cpp
     test_jflow.cpp
     test_structured_grid.cpp
 )

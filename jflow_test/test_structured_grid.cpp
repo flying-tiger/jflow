@@ -1,4 +1,5 @@
 #include "catch.hpp"
+#include "grid_util.hpp"
 #include "structured_grid.hpp"
 #include <cmath>
 #include <cstdio>
@@ -6,9 +7,9 @@
 #include <iostream>
 
 #ifdef NDEBUG
-  #define REQUIRE_THROWS_IF_DEBUG  REQUIRE_NOTHROW
+#define REQUIRE_THROWS_IF_DEBUG REQUIRE_NOTHROW
 #else
-  #define REQUIRE_THROWS_IF_DEBUG  REQUIRE_THROWS
+#define REQUIRE_THROWS_IF_DEBUG REQUIRE_THROWS
 #endif
 
 TEST_CASE("test structured_grid class") {
@@ -243,26 +244,4 @@ TEST_CASE("test structured_grid class") {
         }
         REQUIRE(old_volume == Approx(new_volume));
     };
-}
-
-TEST_CASE("test elliptic grid generator") {
-
-    using vec2 = jflow::vector2;
-    using jflow::constants::pi;
-
-    // Grid parameters
-    double a        = 2.0;
-    vec2 mu_range   = { 0.0, 1.0 };
-    vec2 nu_range   = { pi / 6, pi / 3 };
-    auto exact_area = pi * a * a * sinh(2.0) / 24;
-
-    // Create the grid
-    auto grid = jflow::make_elliptic_grid(a, mu_range, nu_range, { 21, 17 });
-
-    // Verify the volume (area for 2D) is what we expect
-    double volume = 0.0;
-    for (auto cell : grid.cells()) {
-        volume += cell.volume();
-    }
-    REQUIRE(volume == Approx(exact_area).margin(0.001));
 }

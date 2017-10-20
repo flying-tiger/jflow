@@ -1,5 +1,6 @@
 add_library(jflow_lib
     euler.cpp
+    grid_util.cpp
     jflow.cpp
     structured_grid.cpp
 )
