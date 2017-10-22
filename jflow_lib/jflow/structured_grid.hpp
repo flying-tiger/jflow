@@ -55,8 +55,7 @@ class structured_grid {
         check_precondition(
             vertices_.size() == size[0] * size[1],
             "Length of vertex vector doesn't match size argument.");
-        init_face_areas();
-        init_cell_volumes();
+        update_dependent_members();
     }
 
     // Vertex methods
@@ -116,6 +115,9 @@ class structured_grid {
     auto max_jfaces() const -> range2d<jface_handle>;
     auto interior_jfaces() const -> range2d<jface_handle>;
 
+    // Grid mutation
+    auto translate(vector2 offset) -> void;
+
     // Serialization
     static auto read(const std::string& filename) -> structured_grid;
     static auto read(std::istream& in) -> structured_grid;
@@ -124,8 +126,12 @@ class structured_grid {
 
   private:
     // Initializers
-    auto init_face_areas() -> void;
-    auto init_cell_volumes() -> void;
+    auto update_face_areas() -> void;
+    auto update_cell_volumes() -> void;
+    auto update_dependent_members() -> void {
+        update_face_areas();
+        update_cell_volumes();
+    }
 
     // id => i,j calculations
     auto compute_coordinates(std::size_t id, size2 size) const -> size2;

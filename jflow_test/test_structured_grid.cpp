@@ -244,4 +244,9 @@ TEST_CASE("test structured_grid class") {
         }
         REQUIRE(old_volume == Approx(new_volume));
     };
+    SECTION("Test grid translation") {
+        grid.translate({ 1.0, 1.0 });
+        REQUIRE(grid.vertex(0, 0)[0] == Approx(-1.0));
+        REQUIRE(grid.vertex(0, 0)[1] == Approx(0.0));
+    }
 }
