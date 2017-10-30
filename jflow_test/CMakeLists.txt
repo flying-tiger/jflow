@@ -3,6 +3,7 @@ add_executable(jflow_test
     test_common.cpp
     test_euler.cpp
     test_grid_util.cpp
+    test_integrators.cpp
     test_structured_grid.cpp
 )
 target_link_libraries(jflow_test

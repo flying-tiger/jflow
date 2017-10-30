@@ -2,7 +2,12 @@ add_library(jflow_lib
     common.cpp
     euler.cpp
     grid_util.cpp
+    integrators.cpp
     structured_grid.cpp
+)
+target_include_directories(jflow_lib
+  PUBLIC
+    jflow
 )
 target_link_libraries(jflow_lib
   PUBLIC

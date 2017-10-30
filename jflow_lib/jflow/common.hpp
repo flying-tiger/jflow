@@ -18,7 +18,7 @@ using size3 = std::array<std::size_t, 2>;
 using vector2 = Eigen::Matrix<double, 2, 1>;
 using vector3 = Eigen::Matrix<double, 3, 1>;
 using vector4 = Eigen::Matrix<double, 4, 1>;
-using vector5 = Eigen::Matrix<double, 4, 1>;
+using vector5 = Eigen::Matrix<double, 5, 1>;
 
 using matrix22 = Eigen::Matrix<double, 2, 2>;
 using matrix33 = Eigen::Matrix<double, 3, 3>;
