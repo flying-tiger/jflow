@@ -12,6 +12,8 @@ euler::state euler::freestream_;
 // Implementation helpers
 auto spectral_radius(const euler::state& q, const vector2& n) -> double {
 
+    double eps = 0.1;
+
     // Shorthand
     auto& rho  = q[euler::field::density];
     auto& rhou = q[euler::field::momentum_x];
@@ -25,7 +27,9 @@ auto spectral_radius(const euler::state& q, const vector2& n) -> double {
     auto c = perfect_gas::compute_sound_speed(e, rho);
 
     // Spectral radius
-    return c + std::abs(u * n[0] + u * n[1]);
+    auto un = u * n[0] + v * n[1];
+    auto ec = eps * c;
+    return c + std::sqrt(un * un + ec * ec);
 }
 
 // API functions
