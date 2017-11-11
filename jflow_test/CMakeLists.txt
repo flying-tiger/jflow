@@ -8,7 +8,9 @@ add_executable(jflow_test
 )
 target_link_libraries(jflow_test
   PRIVATE
+    blaze
     catch
+    eigen
     jflow_lib
 )
 set_target_properties(jflow_test PROPERTIES ${JFLOW_COMMON_PROPERTIES})

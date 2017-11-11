@@ -12,15 +12,15 @@ set(JFLOW_COMMON_PROPERTIES
 
 # This should eventually go in a toolchain file
 if(MSVC)
-    set(JFLOW_COMMON_OPTIONS    
-      PUBLIC   /std:c++latest 
+    set(JFLOW_COMMON_OPTIONS
+      PUBLIC   /std:c++latest
       PRIVATE  /W3 /WX
     )
     set(JFLOW_COMMON_DEFINES
       PRIVATE _CRT_SECURE_NO_WARNINGS
     )
 else()
-    set(JFLOW_COMMON_OPTIONS 
+    set(JFLOW_COMMON_OPTIONS
       PRIVATE -W -Wall -Werror
     )
     set(JFLOW_COMMON_DEFINES)
