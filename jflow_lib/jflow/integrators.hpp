@@ -4,6 +4,35 @@
 
 namespace jflow {
 
+//-----------------------------------------------------------------------------
+// "system" class
+//-----------------------------------------------------------------------------
+// A "system" is a class that represents a system of first order differential 
+// eqautions of the form:
+//    
+//      dx/dt = R(t,x)
+//
+// More specifically, a "system" is any class that:
+//
+//  1. defines a subclass called "state", typically a vector-like type,  which
+//     completely specifies the current state of the system.
+//
+//  2. defines a subclass called "residual", also a vector-like type, which 
+//     specifies the instanteous rate of change in the state variables.
+//
+//  3. defines a method compute_rhs(t,x) which computes the system residual 
+//     for a given time and system state.
+//
+// Both the state vector and the residual must support basic arithmetic 
+// operations with other instances of it's class: add, subtract, multiply 
+// by scalar, and divide by scalar. 
+//
+// Furthermore, the state and residual classes must support addition and
+// subtraction with each other.
+//
+// TODO: Express these requirements in code!
+//-----------------------------------------------------------------------------
+
 // Integrators
 struct euler_integrator {
     template <class system>
