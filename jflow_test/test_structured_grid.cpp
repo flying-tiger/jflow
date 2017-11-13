@@ -28,12 +28,13 @@ TEST_CASE("test structured_grid class") {
     //
     //         i=0   i=1   i=2   i=3   i=4
 
-    using vec2 = jflow::vector2;
+    using vec2  = jflow::vector2;
+    using size2 = jflow::size2;
 
     // Don't change parameters! Tests will break
-    vec2 xrange = { -2.0, 2.0 };
-    vec2 yrange = { -1.0, 1.0 };
-    auto grid   = jflow::make_cartesian_grid(xrange, yrange, { 5, 3 });
+    auto xrange = vec2{ -2.0, 2.0 };
+    auto yrange = vec2{ -1.0, 1.0 };
+    auto grid   = jflow::make_cartesian_grid(xrange, yrange, size2{ 5, 3 });
 
     SECTION("Test vertex indexing via (i,j) coordinates") {
         REQUIRE((grid.vertex(2, 1) == vec2{ 0.0, 0.0 }));
@@ -245,7 +246,7 @@ TEST_CASE("test structured_grid class") {
         REQUIRE(old_volume == Approx(new_volume));
     };
     SECTION("Test grid translation") {
-        grid.translate({ 1.0, 1.0 });
+        grid.translate(vec2{ 1.0, 1.0 });
         REQUIRE(grid.vertex(0, 0)[0] == Approx(-1.0));
         REQUIRE(grid.vertex(0, 0)[1] == Approx(0.0));
     }

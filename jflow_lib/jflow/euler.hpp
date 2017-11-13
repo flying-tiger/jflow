@@ -6,13 +6,11 @@
 
 namespace jflow {
 
-// TODO: Factor out hard-coded gas model (currently pg, g=1.4)
 struct euler {
 
     // Type definitions
-    using state    = vector4;
-    using flux     = vector4;
-    using jacobian = matrix44;
+    using state = vector4;
+    using flux  = vector4;
 
     // Field indices
     struct field {

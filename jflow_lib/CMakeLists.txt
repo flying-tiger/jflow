@@ -11,7 +11,7 @@ target_include_directories(jflow_lib
 )
 target_link_libraries(jflow_lib
   PUBLIC
-    eigen
+    blaze
 )
 target_include_directories(jflow_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 set_target_properties(jflow_lib PROPERTIES ${JFLOW_COMMON_PROPERTIES})

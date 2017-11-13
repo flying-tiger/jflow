@@ -44,7 +44,7 @@ struct orbital_body {
         auto ay     = -accel * py / radius;
 
         // Compute rhs
-        return rhs(vx, vy, ax, ay);
+        return rhs{ vx, vy, ax, ay };
     }
 };
 
@@ -90,29 +90,29 @@ TEST_CASE("test integrator accuracy") {
     auto ta = 0.5 * T;                             // Time at apoapsis
 
     // Instantiate object and define initial/final state
-    orbital_body body         = { mu };
-    orbital_body::state begin = { -rp, 0.0, 0.0, vp };
-    orbital_body::state end   = { ra, 0.0, 0.0, -va };
-    vector2 tspan             = { tp, ta };
+    auto body  = orbital_body{ mu };
+    auto begin = orbital_body::state{ -rp, 0.0, 0.0, vp };
+    auto end   = orbital_body::state{ ra, 0.0, 0.0, -va };
+    auto tspan = vector2{ tp, ta };
 
     SECTION("Propagate to apoapsis using RK4; verify 4th-order accuracy") {
         auto rate = convergence_rate({ 100, 200, 400 }, [=](auto steps) {
             auto result = integrate<rk4_integrator>(body, begin, tspan, steps);
-            return (result.state - end).norm();
+            return norm(result.state - end);
         });
         REQUIRE(rate == Approx(4.10).margin(0.05));
     }
     SECTION("Propagate to apoapsis using Shu-Osher; verify 2nd-order accuracy") {
         auto rate = convergence_rate({ 100, 200, 400 }, [=](auto steps) {
             auto result = integrate<shu_osher_integrator>(body, begin, tspan, steps);
-            return (result.state - end).norm();
+            return norm(result.state - end);
         });
         REQUIRE(rate == Approx(2.03).margin(0.05));
     }
     SECTION("Propagate to apoapsis using Euler forward; verify 1st-order accuracy") {
         auto rate = convergence_rate({ 200, 400, 800 }, [=](auto steps) {
             auto result = integrate<euler_integrator>(body, begin, tspan, steps);
-            return (result.state - end).norm();
+            return norm(result.state - end);
         });
         REQUIRE(rate == Approx(0.93).margin(0.05));
     }

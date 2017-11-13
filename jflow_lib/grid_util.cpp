@@ -21,12 +21,11 @@ auto make_cartesian_grid(vector2 xrange, vector2 yrange, size2 size) -> structur
 }
 auto make_elliptic_grid(double eccentricity, vector2 mu_range, vector2 nu_range, size2 size)
     -> structured_grid {
-    using namespace std;
     const auto& a = eccentricity;  // Shorthand
     check_precondition(a >= 0, "eccentricity must be positive.");
     check_precondition(size[0] >= 2, "nx is too small.");
     check_precondition(size[1] >= 2, "ny is too small.");
-    vector<vector2> vertices;
+    std::vector<vector2> vertices;
     vertices.reserve(size[0] * size[1]);
     auto dmu = (mu_range[1] - mu_range[0]) / (size[0] - 1);
     auto dnu = (nu_range[1] - nu_range[0]) / (size[1] - 1);
@@ -72,8 +71,8 @@ auto make_hyperbolic_forebody_grid(
     auto nu_max = atan(tan(theta) * tanh(mu_max));
 
     // Construct the grid
-    auto grid = make_elliptic_grid(c, { 0.0, mu_max }, { nu_min, nu_max }, size);
-    grid.translate(-1.0 * grid.vertex(0,0)); // Make nosetip (0,0)
+    auto grid = make_elliptic_grid(c, vector2{ 0.0, mu_max }, vector2{ nu_min, nu_max }, size);
+    grid.translate(-1.0 * grid.vertex(0, 0));  // Make nosetip (0,0)
     return grid;
 }
 

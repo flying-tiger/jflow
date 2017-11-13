@@ -69,7 +69,7 @@ class structured_grid {
         return vertices_[compute_vertex_id(coordinates)];
     }
     auto vertex(std::size_t i, std::size_t j) const -> vector2 {
-        return vertex({ i, j });
+        return vertex(size2{ i, j });
     }
     auto vertices() const -> const std::vector<vector2>& {
         // TODO: Have this return a range like other objects
@@ -227,8 +227,8 @@ class structured_grid::range2d {
     class iterator;
     range2d(const structured_grid& parent, size2 irange, size2 jrange, size2 size)
         : parent_(parent)
-        , start_(parent_.compute_id({ irange[0], jrange[0] }, size))
-        , end_(parent_.compute_id({ irange[1] - 1, jrange[0] }, size) + size[1])
+        , start_(parent_.compute_id(size2{ irange[0], jrange[0] }, size))
+        , end_(parent_.compute_id(size2{ irange[1] - 1, jrange[0] }, size) + size[1])
         , interval_(jrange[1] - jrange[0])
         , offset_(size[1] - (jrange[1] - jrange[0])) {
         check_precondition(irange[0] < irange[1], "irange must be strictly sorted");
@@ -272,70 +272,70 @@ inline auto structured_grid::cell(size2 coordinates) const -> cell_handle {
     return cell_handle(*this, compute_cell_id(coordinates));
 }
 inline auto structured_grid::cell(std::size_t i, std::size_t j) const -> cell_handle {
-    return cell({ i, j });
+    return cell(size2{ i, j });
 }
 inline auto structured_grid::iface(size2 coordinates) const -> iface_handle {
     return iface_handle(*this, compute_iface_id(coordinates));
 }
 inline auto structured_grid::iface(std::size_t i, std::size_t j) const -> iface_handle {
-    return iface({ i, j });
+    return iface(size2{ i, j });
 }
 inline auto structured_grid::jface(size2 coordinates) const -> jface_handle {
     return jface_handle(*this, compute_jface_id(coordinates));
 }
 inline auto structured_grid::jface(std::size_t i, std::size_t j) const -> jface_handle {
-    return jface({ i, j });
+    return jface(size2{ i, j });
 }
 inline auto structured_grid::cells() const -> range2d<cell_handle> {
-    size2 irange = { 0, size_cell(0) };
-    size2 jrange = { 0, size_cell(1) };
+    auto irange = size2{ 0, size_cell(0) };
+    auto jrange = size2{ 0, size_cell(1) };
     return range2d<cell_handle>(*this, irange, jrange, size_cell_);
 }
 inline auto structured_grid::ifaces() const -> range2d<iface_handle> {
-    size2 irange = { 0, size_iface(0) };
-    size2 jrange = { 0, size_iface(1) };
+    auto irange = size2{ 0, size_iface(0) };
+    auto jrange = size2{ 0, size_iface(1) };
     return range2d<iface_handle>(*this, irange, jrange, size_iface_);
 }
 inline auto structured_grid::min_ifaces() const -> range2d<iface_handle> {
-    size2 irange = { 0, 1 };
-    size2 jrange = { 0, size_iface(1) };
+    auto irange = size2{ 0, 1 };
+    auto jrange = size2{ 0, size_iface(1) };
     return range2d<iface_handle>(*this, irange, jrange, size_iface_);
 }
 inline auto structured_grid::max_ifaces() const -> range2d<iface_handle> {
-    size2 irange = { size_iface(0) - 1, size_iface(0) };
-    size2 jrange = { 0, size_iface(1) };
+    auto irange = size2{ size_iface(0) - 1, size_iface(0) };
+    auto jrange = size2{ 0, size_iface(1) };
     return range2d<iface_handle>(*this, irange, jrange, size_iface_);
 }
 inline auto structured_grid::interior_ifaces() const -> range2d<iface_handle> {
-    size2 irange = { 1, size_iface(0) - 1 };
-    size2 jrange = { 0, size_iface(1) };
+    auto irange = size2{ 1, size_iface(0) - 1 };
+    auto jrange = size2{ 0, size_iface(1) };
     return range2d<iface_handle>(*this, irange, jrange, size_iface_);
 }
 inline auto structured_grid::jfaces() const -> range2d<jface_handle> {
-    size2 irange = { 0, size_jface(0) };
-    size2 jrange = { 0, size_jface(1) };
+    auto irange = size2{ 0, size_jface(0) };
+    auto jrange = size2{ 0, size_jface(1) };
     return range2d<jface_handle>(*this, irange, jrange, size_jface_);
 }
 inline auto structured_grid::min_jfaces() const -> range2d<jface_handle> {
-    size2 irange = { 0, size_jface(0) };
-    size2 jrange = { 0, 1 };
+    auto irange = size2{ 0, size_jface(0) };
+    auto jrange = size2{ 0, 1 };
     return range2d<jface_handle>(*this, irange, jrange, size_jface_);
 }
 inline auto structured_grid::max_jfaces() const -> range2d<jface_handle> {
-    size2 irange = { 0, size_jface(0) };
-    size2 jrange = { size_jface(1) - 1, size_jface(1) };
+    auto irange = size2{ 0, size_jface(0) };
+    auto jrange = size2{ size_jface(1) - 1, size_jface(1) };
     return range2d<jface_handle>(*this, irange, jrange, size_jface_);
 }
 inline auto structured_grid::interior_jfaces() const -> range2d<jface_handle> {
-    size2 irange = { 0, size_jface(0) };
-    size2 jrange = { 1, size_jface(1) - 1 };
+    auto irange = size2{ 0, size_jface(0) };
+    auto jrange = size2{ 1, size_jface(1) - 1 };
     return range2d<jface_handle>(*this, irange, jrange, size_jface_);
 }
 inline auto structured_grid::compute_coordinates(std::size_t id, size2 size) const -> size2 {
     check_precondition(0 <= id && id < size[0] * size[1], "id is out of range.");
     auto i = id / size[1];
     auto j = id - i * size[1];
-    return { i, j };
+    return size2{ i, j };
 }
 inline auto structured_grid::compute_vertex_coordinates(std::size_t id) const -> size2 {
     return compute_coordinates(id, size_vertex_);

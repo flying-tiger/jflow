@@ -1,9 +1,9 @@
 #ifndef JFLOW_COMMON_HPP
 #define JFLOW_COMMON_HPP
 
-#include <Eigen/Core>
-#include <Eigen/Geometry>
+#include "blaze/Math.h"
 #include <array>
+#include <cmath>
 #include <stdexcept>
 #include <string>
 
@@ -12,18 +12,13 @@ namespace jflow {
 //-----------------------------------------------------------------------
 // Vocabulary Types
 //-----------------------------------------------------------------------
-using size2 = std::array<std::size_t, 2>;
-using size3 = std::array<std::size_t, 2>;
+using size2 = blaze::StaticVector<std::size_t, 2>;
+using size3 = blaze::StaticVector<std::size_t, 3>;
 
-using vector2 = Eigen::Matrix<double, 2, 1>;
-using vector3 = Eigen::Matrix<double, 3, 1>;
-using vector4 = Eigen::Matrix<double, 4, 1>;
-using vector5 = Eigen::Matrix<double, 5, 1>;
-
-using matrix22 = Eigen::Matrix<double, 2, 2>;
-using matrix33 = Eigen::Matrix<double, 3, 3>;
-using matrix44 = Eigen::Matrix<double, 4, 4>;
-using matrix55 = Eigen::Matrix<double, 5, 5>;
+using vector2 = blaze::StaticVector<double, 2>;
+using vector3 = blaze::StaticVector<double, 3>;
+using vector4 = blaze::StaticVector<double, 4>;
+using vector5 = blaze::StaticVector<double, 5>;
 
 //-----------------------------------------------------------------------
 // Error Handling
@@ -35,9 +30,9 @@ struct runtime_error : public std::runtime_error {
         : std::runtime_error(what) {}
 };
 
-struct precondition_error : public runtime_error {
+struct precondition_error : public std::runtime_error {
     precondition_error(const std::string& what)
-        : runtime_error(what) {}
+        : std::runtime_error(what) {}
 };
 
 // Use this instead of assert to throw instead of abort on error.
@@ -58,27 +53,46 @@ namespace constants {
     extern const double pi;
 };
 
-//-----------------------------------------------------------------------
-// Miscellaneous Utilities
-//-----------------------------------------------------------------------
+}  // namespace jflow
 
-// Eigen does not provide a cross product specialization for 2D vectors,
-// so we provide on here. For symmetry, we define a vector3 overload as
-// well, but since it returns a vector3 it will shout-circuts Eigen's
-// expression-template engine and may not optimize as well..
-inline double cross(const vector2& x, const vector2& y) {
+//-----------------------------------------------------------------------
+// Blaze Extensions
+//-----------------------------------------------------------------------
+// Blaze does not provide a cross product specialization for 2D vectors,
+// and does not provide vector norms. Here we add those functions to the
+// blaze namespace so they can be discoved via ADL.
+namespace blaze {
+
+template <typename VT1, bool TF1, typename VT2, bool TF2>
+auto cross2d(const Vector<VT1, TF1>& base_x, const Vector<VT2, TF2>& base_y) {
+    const auto& x = ~base_x;
+    const auto& y = ~base_y;
     return x[0] * y[1] - x[1] * y[0];
 }
 
-// TODO: Fix cross for vector3 inpuths.
-// This overloaad causes problems when arguments are Eigen expression
-// templates; apparently expressions templates aren't smart enough to
-// fail when implicitly converted to type w/ wrong size. Can probably
-// fix this with some SFINAE dark magic.
-// inline vector3 cross(const vector3& x, const vector3& y) {
-//    return x.cross(y); // Delegates to Eigen
-//}
+template <typename VT, bool TF>
+auto norm(const blaze::Vector<VT, TF>& v) {
+    return std::sqrt(dot(v, v));
+}
+}
 
-}  // namespace jflow
+// Blaze does not provide structured bindings for its fixed-size vectors.
+// The code below adds this functionality. Based on:
+//   https://blog.tartanllama.xyz/structured-bindings/
+namespace std {
+
+template <typename T, std::size_t N>
+struct tuple_size<blaze::StaticVector<T, N>> : std::integral_constant<std::size_t, N> {};
+
+template <std::size_t I, typename T, std::size_t N>
+decltype(auto) get(blaze::StaticVector<T, N>& x) {
+    return x[I];
+}
+
+template <std::size_t I, typename T, std::size_t N>
+struct tuple_element<I, blaze::StaticVector<T, N>> {
+    using type = decltype(std::get<I>(blaze::StaticVector<T, N>()));
+};
+}
 
 #endif
