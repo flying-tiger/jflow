@@ -15,14 +15,6 @@ target_include_directories(catch
 )
 
 #-----------------------------------------------------------------------
-# Eigen
-#-----------------------------------------------------------------------
-add_library(eigen INTERFACE)
-target_include_directories(eigen
-    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/eigen
-)
-
-#-----------------------------------------------------------------------
 # YAML
 #-----------------------------------------------------------------------
 add_subdirectory(yaml-cpp EXCLUDE_FROM_ALL)
@@ -47,8 +39,10 @@ target_link_libraries(yaml
 #     that DOES define the include dir and requires linking to the
 #     yaml-cpp target.
 #
-# [3] Eigen actually does have a pretty modern CMakeLists, but for con-
-#     sistency with my other deps I've just declared a new header-only
-#     target.
+# [3] Blaze actually does have a pretty modern CMakeLists, but I'm having
+#     trouble doing a proper install because it can't find LAPACK on
+#     windows. Using as header only for now. Will need to update this
+#     eventually....
+
 
 
