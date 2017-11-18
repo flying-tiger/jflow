@@ -1,8 +1,8 @@
 add_library(jflow_lib
     common.cpp
     euler.cpp
+    finite_volume.cpp
     grid_util.cpp
-    integrators.cpp
     structured_grid.cpp
 )
 target_include_directories(jflow_lib

@@ -2,7 +2,15 @@
 
 namespace jflow {
 
-auto finite_volume::compute_residual(const solution& U, residual& R) -> void {
+auto finite_volume::make_residual() const -> residual {
+    return residual(grid_.num_cell());
+}
+
+auto finite_volume::make_state(physics::state init) const -> state {
+    return state(grid_.num_cell(), init);
+}
+
+auto finite_volume::compute_rhs(double t, const state& U) const -> residual {
 
     // Shorthand
     using std::size_t;
@@ -11,6 +19,10 @@ auto finite_volume::compute_residual(const solution& U, residual& R) -> void {
     const auto& imax_flux = physics::compute_flux;  // Extrapolate
     const auto& jmin_flux = physics::compute_wall_flux;
     const auto& jmax_flux = physics::compute_freestream_flux;
+
+    // Allocate the residual vector
+    // TODO: Profile this! Should we pass in the buffer? What sort of a hit are we taking here?
+    residual R = make_residual();
 
     // Interior flux
     for (const auto& f : grid_.interior_ifaces()) {
@@ -45,6 +57,8 @@ auto finite_volume::compute_residual(const solution& U, residual& R) -> void {
         auto id = f.cell(0).id();
         R[id] -= jmax_flux(U[id], f.area());
     }
+
+    return R;
 }
 
 }  // namespace jflow

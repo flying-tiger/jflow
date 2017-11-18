@@ -11,13 +11,20 @@ class finite_volume {
 
   public:
     using physics  = euler;
-    using solution = std::vector<euler::state>;
-    using residual = std::vector<euler::flux>;
+    using state    = blaze::DynamicVector<physics::state>;
+    using residual = blaze::DynamicVector<physics::flux>;
 
+    // TODO: This is error prone... can silently create dangling reference if grid is a
+    // temporary... Could explicitly delete an r-value constructors. Should FV own it's
+    // grid? If so, should this be a move-only argument to avoid duplicating the grid?
+    // What about a shared_ptr? That would be the the most robust way, but then we have
+    // shared mutable state, which I've so far managed to avoid.
     finite_volume(const structured_grid& grid)
         : grid_(grid) {}
 
-    auto compute_residual(const solution& U, residual& R) -> void;
+    auto make_residual() const -> residual;
+    auto make_state(physics::state init = physics::state()) const -> state;
+    auto compute_rhs(double t, const state& U) const -> residual;
 
   private:
     // Should finite_volume be a stateless class like Euler? You provide the grid and the

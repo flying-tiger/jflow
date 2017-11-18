@@ -2,6 +2,7 @@ add_executable(jflow_test
     test.cpp
     test_common.cpp
     test_euler.cpp
+    test_finite_volume.cpp
     test_grid_util.cpp
     test_integrators.cpp
     test_structured_grid.cpp
