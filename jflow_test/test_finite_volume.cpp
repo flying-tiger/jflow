@@ -22,14 +22,13 @@ TEST_CASE("Verify flux integration") {
 
     SECTION("Check flow parallel to the wall had zero residual") {
 
-        // Initialize solution state vector
+        // Define fluid state
         double p = 1000.0, T = 300.0, u = 500.0, v = 0.0;
-        auto rho = perfect_gas::compute_density(p, T);
-        auto E   = perfect_gas::compute_energy(T) + 0.5 * (u * u + v * v);
-        auto U   = fv.make_state(euler::state{ rho, rho * u, rho * v, rho * E });
+        auto test_state = euler::make_state(p, T, u, v);
 
-        // Set the freestream
-        euler::set_freestream(p, T, u, v);
+        // Set the freestream and initial solution vector
+        euler::set_freestream(test_state);
+        auto U = fv.make_state(test_state);
 
         // Compute residual and check results
         auto time = 0.0;
@@ -45,14 +44,16 @@ TEST_CASE("Verify flux integration") {
 
         // Initialize solution state vector
         double p = 1000.0, T = 300.0, u = 0.0, v = 500.0;
-        auto rho = perfect_gas::compute_density(p, T);
-        auto E   = perfect_gas::compute_energy(T) + 0.5 * (u * u + v * v);
-        auto U   = fv.make_state(euler::state{ rho, rho * u, rho * v, rho * E });
+        auto interior   = euler::make_state(p, T, u, v);
+        auto freestream = euler::make_state(p, T, u, 2 * v);
 
-        // Set the freestream
-        euler::set_freestream(p, T, u, 2 * v);
+        // Set the freestream and initial solution vector
+        euler::set_freestream(freestream);
+        auto U = fv.make_state(interior);
 
         // Calculate reference fluxes
+        auto rho = perfect_gas::compute_density(p, T);
+        auto E   = perfect_gas::compute_energy(T) + 0.5 * (u * u + v * v);
         auto H   = E + p / rho;
         auto hi  = euler::flux{ -rho * v, 0.0, -3 * rho * v * v, -rho * v * (H + 3 * v * v) };
         auto mid = euler::flux{ 0.0, 0.0, 0.0, 0.0 };

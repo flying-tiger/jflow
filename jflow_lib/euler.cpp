@@ -85,10 +85,13 @@ auto euler::compute_jump_flux(
     auto fr = compute_flux(qr, n);
     return 0.5 * (fl + fr - lam * (ql - qr));
 }
-auto euler::set_freestream(double p, double T, double vx, double vy) -> void {
-    double rho  = perfect_gas::compute_density(p, T);
-    double E    = perfect_gas::compute_energy(T) + 0.5 * (vx * vx + vy * vy);
-    freestream_ = state{ rho, rho * vx, rho * vy, rho * E };
+auto euler::make_state(double p, double T, double vx, double vy) -> state {
+    double rho = perfect_gas::compute_density(p, T);
+    double E   = perfect_gas::compute_energy(T) + 0.5 * (vx * vx + vy * vy);
+    return state{ rho, rho * vx, rho * vy, rho * E };
+}
+auto euler::set_freestream(const state& q) -> void {
+    freestream_ = q;
 }
 auto perfect_gas::set_gas_props(double g, double R) -> void {
     specific_heat_ratio_   = g;

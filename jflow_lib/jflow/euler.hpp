@@ -27,7 +27,8 @@ struct euler {
     static auto compute_jump_flux(const state& ql, const state& qr, const vector2& n) -> flux;
 
     // Global configuration
-    static auto set_freestream(double p, double T, double vx, double vy) -> void;
+    static auto make_state(double p, double T, double vx, double vy) -> state;
+    static auto set_freestream(const state& q) -> void;
 
   private:
     // TODO: Get rid of global static state
