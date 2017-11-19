@@ -3,11 +3,11 @@
 namespace jflow {
 
 auto finite_volume::make_residual() const -> residual {
-    return residual(grid_.num_cell());
+    return residual(grid_.size_cell());
 }
 
 auto finite_volume::make_state(physics::state init) const -> state {
-    return state(grid_.num_cell(), init);
+    return state(grid_.size_cell(), init);
 }
 
 auto finite_volume::compute_rhs(double t, const state& U) const -> residual {

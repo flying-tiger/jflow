@@ -55,11 +55,11 @@ class structured_grid {
         check_precondition(
             vertices_.size() == size[0] * size[1],
             "Length of vertex vector doesn't match size argument.");
-        update_dependent_members();
+        update_face_areas();
     }
 
     // Vertex methods
-    auto num_vertex() const -> std::size_t {
+    auto size_vertex() const -> std::size_t {
         return size_vertex_[0] * size_vertex_[1];
     }
     auto size_vertex(std::size_t dim) const -> std::size_t {
@@ -77,7 +77,7 @@ class structured_grid {
     }
 
     // Cell methods
-    auto num_cell() const -> std::size_t {
+    auto size_cell() const -> std::size_t {
         return size_cell(0) * size_cell(1);
     }
     auto size_cell(std::size_t dim) const -> std::size_t {
@@ -88,7 +88,7 @@ class structured_grid {
     auto cells() const -> range2d<cell_handle>;
 
     // Constant-i face methods
-    auto num_iface() const -> std::size_t {
+    auto size_iface() const -> std::size_t {
         return size_iface(0) * size_iface(1);
     }
     auto size_iface(std::size_t dim) const -> std::size_t {
@@ -102,7 +102,7 @@ class structured_grid {
     auto interior_ifaces() const -> range2d<iface_handle>;
 
     // Constant-j face methods
-    auto num_jface() const -> std::size_t {
+    auto size_jface() const -> std::size_t {
         return size_jface(0) * size_jface(1);
     }
     auto size_jface(std::size_t dim) const -> std::size_t {
@@ -127,11 +127,6 @@ class structured_grid {
   private:
     // Initializers
     auto update_face_areas() -> void;
-    auto update_cell_volumes() -> void;
-    auto update_dependent_members() -> void {
-        update_face_areas();
-        update_cell_volumes();
-    }
 
     // id => i,j calculations
     auto compute_coordinates(std::size_t id, size2 size) const -> size2;
@@ -151,7 +146,6 @@ class structured_grid {
     size2 size_cell_;                   // Number of cells along each coordinate
     size2 size_iface_;                  // Number of ifaces along each coordinate
     size2 size_jface_;                  // Number of jfaces along each coordinate
-    std::vector<double> cell_volumes_;  // Volume of each grid cell
     std::vector<vector2> iface_areas_;  // Area vector for constant-i faces
     std::vector<vector2> jface_areas_;  // Area vector for constant-j faces
     std::vector<vector2> vertices_;     // Vertices defining the mesh
@@ -401,7 +395,14 @@ inline auto structured_grid::cell_handle::vertex(std::size_t n) const -> vector2
     }
 }
 inline auto structured_grid::cell_handle::volume() const -> double {
-    return parent_.cell_volumes_[id_];
+    // This calculation of the volume (really the area in 2D) is exact when all
+    // four vertices are co-planar. Don't use this to compute the area of a
+    // general 3D quadrilateral!
+    const auto& v0 = this->vertex(0);
+    const auto& v1 = this->vertex(1);
+    const auto& v2 = this->vertex(2);
+    const auto& v3 = this->vertex(3);
+    return 0.5 * (cross2d(v1 - v0, v3 - v0) + cross2d(v3 - v2, v1 - v2));
 }
 inline auto structured_grid::iface_handle::operator==(const iface_handle& other) const -> bool {
     return &parent_ == &other.parent_ && id_ == other.id_;

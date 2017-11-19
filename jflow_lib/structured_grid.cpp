@@ -38,33 +38,18 @@ auto structured_grid::translate(vector2 offset) -> void {
     for (auto& v : this->vertices_) {
         v += offset;
     }
-    // No update_dependent_members: volume/area invariant under translation
-}
-auto structured_grid::update_cell_volumes() -> void {
-    cell_volumes_.clear();
-    cell_volumes_.reserve(num_cell());
-    for (const auto& c : cells()) {
-        auto v0 = c.vertex(0);
-        auto v1 = c.vertex(1);
-        auto v2 = c.vertex(2);
-        auto v3 = c.vertex(3);
-
-        // This calculation of the volume (really the area in 2D) is exact
-        // when all four vertices are co-planar. Don't use this to compute
-        // the area of a general 3D quadrilateral!
-        cell_volumes_.push_back(0.5 * (cross2d(v1 - v0, v3 - v0) + cross2d(v3 - v2, v1 - v2)));
-    }
+    // No update_face_area: areas invariant under translation
 }
 auto structured_grid::update_face_areas() -> void {
     iface_areas_.clear();
-    iface_areas_.reserve(num_iface());
+    iface_areas_.reserve(size_iface());
     for (const auto& f : ifaces()) {
         auto v0 = f.vertex(0);
         auto v1 = f.vertex(1);
         iface_areas_.push_back(vector2{ -(v1[1] - v0[1]), v1[0] - v0[0] });
     }
     jface_areas_.clear();
-    jface_areas_.reserve(num_jface());
+    jface_areas_.reserve(size_jface());
     for (const auto& f : jfaces()) {
         auto v0 = f.vertex(0);
         auto v1 = f.vertex(1);

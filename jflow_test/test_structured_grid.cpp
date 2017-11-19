@@ -159,22 +159,22 @@ TEST_CASE("test structured_grid class") {
         sum = 0;
         for (const auto& v : grid.vertices())
             ++sum;
-        REQUIRE(sum == grid.num_vertex());
+        REQUIRE(sum == grid.size_vertex());
 
         sum = 0;
         for (const auto& c : grid.cells())
             ++sum;
-        REQUIRE(sum == grid.num_cell());
+        REQUIRE(sum == grid.size_cell());
 
         sum = 0;
         for (const auto& f : grid.ifaces())
             ++sum;
-        REQUIRE(sum == grid.num_iface());
+        REQUIRE(sum == grid.size_iface());
 
         sum = 0;
         for (const auto& f : grid.jfaces())
             ++sum;
-        REQUIRE(sum == grid.num_jface());
+        REQUIRE(sum == grid.size_jface());
     }
     SECTION("Test looping over min/max boundaries") {
         std::size_t sum, ans;
