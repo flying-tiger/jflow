@@ -20,6 +20,9 @@ using vector3 = blaze::StaticVector<double, 3>;
 using vector4 = blaze::StaticVector<double, 4>;
 using vector5 = blaze::StaticVector<double, 5>;
 
+template <typename T>
+using dynamic_vector = blaze::DynamicVector<T>;
+
 //-----------------------------------------------------------------------
 // Error Handling
 //-----------------------------------------------------------------------

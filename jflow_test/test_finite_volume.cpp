@@ -15,10 +15,14 @@ TEST_CASE("Verify flux integration") {
     using namespace jflow;
 
     // Create finite volume instance
-    auto xrange = vector2{ -1.0, 1.0 };
-    auto yrange = vector2{ -1.0, 1.0 };
-    auto grid   = make_cartesian_grid(xrange, yrange, size2{ 3, 4 });
-    auto fv     = finite_volume(grid);
+    auto xlim = vector2{ 0.0, 1.0 };
+    auto ylim = vector2{ 0.0, 1.0 };
+    auto size = size2{ 3, 4 };
+    auto fv   = finite_volume(make_cartesian_grid(xlim, ylim, size));
+
+    // Get relevant metric terms
+    auto ivol = 1.0 / fv.grid().cell(0, 0).volume();
+    auto area = fv.grid().cell(0, 0).jface(0).area()[1];
 
     SECTION("Check flow parallel to the wall had zero residual") {
 
@@ -28,7 +32,7 @@ TEST_CASE("Verify flux integration") {
 
         // Set the freestream and initial solution vector
         euler::set_freestream(test_state);
-        auto U = fv.make_state(test_state);
+        auto U = fv.make_state_vector(test_state);
 
         // Compute residual and check results
         auto time = 0.0;
@@ -49,24 +53,24 @@ TEST_CASE("Verify flux integration") {
 
         // Set the freestream and initial solution vector
         euler::set_freestream(freestream);
-        auto U = fv.make_state(interior);
+        auto U = fv.make_state_vector(interior);
 
-        // Calculate reference fluxes
-        auto rho = perfect_gas::compute_density(p, T);
-        auto E   = perfect_gas::compute_energy(T) + 0.5 * (u * u + v * v);
-        auto H   = E + p / rho;
-        auto hi  = euler::flux{ -rho * v, 0.0, -3 * rho * v * v, -rho * v * (H + 3 * v * v) };
-        auto mid = euler::flux{ 0.0, 0.0, 0.0, 0.0 };
-        auto lo  = euler::flux{ -rho * v, 0.0, -rho * v * v, -rho * H * v };
+        // Calculate flux differences across each cell
+        auto rho   = perfect_gas::compute_density(p, T);
+        auto E     = perfect_gas::compute_energy(T) + 0.5 * (u * u + v * v);
+        auto H     = E + p / rho;
+        auto diff0 = euler::flux{ -rho * v, 0.0, -rho * v * v, -rho * H * v };
+        auto diff1 = euler::flux{ 0.0, 0.0, 0.0, 0.0 };
+        auto diff2 = euler::flux{ -rho * v, 0.0, -3 * rho * v * v, -rho * v * (H + 3 * v * v) };
 
         // Compute and check residual
         auto time = 0.0;
         auto res  = fv.compute_rhs(time, U);
-        REQUIRE(norm(res[0] - lo) == Approx(0.0));
-        REQUIRE(norm(res[1] - mid) == Approx(0.0));
-        REQUIRE(norm(res[2] - hi) == Approx(0.0));
-        REQUIRE(norm(res[3] - lo) == Approx(0.0));
-        REQUIRE(norm(res[4] - mid) == Approx(0.0));
-        REQUIRE(norm(res[5] - hi) == Approx(0.0));
+        REQUIRE(norm(res[0] - ivol * area * diff0) == Approx(0.0));
+        REQUIRE(norm(res[1] - ivol * area * diff1) == Approx(0.0));
+        REQUIRE(norm(res[2] - ivol * area * diff2) == Approx(0.0));
+        REQUIRE(norm(res[3] - ivol * area * diff0) == Approx(0.0));
+        REQUIRE(norm(res[4] - ivol * area * diff1) == Approx(0.0));
+        REQUIRE(norm(res[5] - ivol * area * diff2) == Approx(0.0));
     }
 }

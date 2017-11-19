@@ -11,27 +11,32 @@ class finite_volume {
 
   public:
     using physics  = euler;
-    using state    = blaze::DynamicVector<physics::state>;
-    using residual = blaze::DynamicVector<physics::flux>;
+    using state    = dynamic_vector<physics::state>;
+    using residual = dynamic_vector<physics::flux>;
 
-    // TODO: This is error prone... can silently create dangling reference if grid is a
-    // temporary... Could explicitly delete an r-value constructors. Should FV own it's
-    // grid? If so, should this be a move-only argument to avoid duplicating the grid?
-    // What about a shared_ptr? That would be the the most robust way, but then we have
-    // shared mutable state, which I've so far managed to avoid.
-    finite_volume(const structured_grid& grid)
-        : grid_(grid) {}
+    // Constructor
+    finite_volume(structured_grid grid)
+        : grid_(std::move(grid)) {
+        update_inverse_volumes();
+    }
 
-    auto make_residual() const -> residual;
-    auto make_state(physics::state init = physics::state()) const -> state;
+    // Accessors
+    auto grid() const -> const structured_grid& {
+        return grid_;
+    }
+
+    // API Functions
     auto compute_rhs(double t, const state& U) const -> residual;
+    auto make_residual_vector() const -> residual;
+    auto make_state_vector(physics::state init = physics::state()) const -> state;
 
   private:
-    // Should finite_volume be a stateless class like Euler? You provide the grid and the
-    // state and we provide the RHS/LHS; no configuration, etc. Will have to come up with
-    // a good architecture for assigning boundary conditions and other problem-dependent
-    // data.
-    const structured_grid& grid_;
+    // Initializers
+    auto update_inverse_volumes() -> void;
+
+    // Members
+    structured_grid grid_;
+    dynamic_vector<double> inverse_volumes_;
 };
 
 }  // namespace jflow

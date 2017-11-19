@@ -2,14 +2,6 @@
 
 namespace jflow {
 
-auto finite_volume::make_residual() const -> residual {
-    return residual(grid_.size_cell());
-}
-
-auto finite_volume::make_state(physics::state init) const -> state {
-    return state(grid_.size_cell(), init);
-}
-
 auto finite_volume::compute_rhs(double t, const state& U) const -> residual {
 
     // Shorthand
@@ -22,7 +14,7 @@ auto finite_volume::compute_rhs(double t, const state& U) const -> residual {
 
     // Allocate the residual vector
     // TODO: Profile this! Should we pass in the buffer? What sort of a hit are we taking here?
-    residual R = make_residual();
+    residual R = make_residual_vector();
 
     // Interior flux
     for (const auto& f : grid_.interior_ifaces()) {
@@ -58,7 +50,21 @@ auto finite_volume::compute_rhs(double t, const state& U) const -> residual {
         R[id] -= jmax_flux(U[id], f.area());
     }
 
-    return R;
+    return R * inverse_volumes_;
 }
-
+auto finite_volume::make_residual_vector() const -> residual {
+    return residual(grid_.size_cell());
+}
+auto finite_volume::make_state_vector(physics::state init) const -> state {
+    return state(grid_.size_cell(), init);
+}
+auto finite_volume::update_inverse_volumes() -> void {
+    inverse_volumes_.resize(grid_.size_cell());
+    inverse_volumes_.shrinkToFit();
+    auto it = inverse_volumes_.begin();
+    for (auto cell : grid_.cells()) {
+        *it = 1.0 / cell.volume();
+        ++it;
+    }
+}
 }  // namespace jflow
