@@ -25,11 +25,11 @@ struct orbital_body {
     double mu;  // Gravitational Constant: G*(m1 + m2)
 
     // Definitions
-    using state = jflow::vector4;
-    using rhs   = jflow::vector4;
+    using state    = jflow::vector4;
+    using residual = jflow::vector4;
 
     // Methods
-    auto compute_rhs(double t, const state& u) const -> rhs {
+    auto compute_rhs(double t, const state& u) const -> residual {
 
         // Shorthand
         auto& px = u[0];
@@ -44,7 +44,7 @@ struct orbital_body {
         auto ay     = -accel * py / radius;
 
         // Compute rhs
-        return rhs{ vx, vy, ax, ay };
+        return residual{ vx, vy, ax, ay };
     }
 };
 

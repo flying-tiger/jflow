@@ -5,6 +5,7 @@
 #include "jflow/integrators.hpp"
 #include "yaml-cpp/yaml.h"
 #include <cstdlib>
+#include <iomanip>
 #include <iostream>
 
 //-----------------------------------------------------------------------
@@ -60,6 +61,7 @@ YAML::Node parse_arguments(int argc, char* argv[]) {
 // TODO:
 int main(int argc, char* argv[]) {
     using namespace jflow;
+    using namespace std;
     auto d2r  = constants::pi / 180;
     auto args = parse_arguments(argc, argv);
 
@@ -81,8 +83,18 @@ int main(int argc, char* argv[]) {
 
     auto dt     = args["solver"]["timestep"].as<double>();
     auto nsteps = args["solver"]["iterations"].as<std::size_t>();
-    auto tspan  = vector2{ 0.0, nsteps * dt };
-    integrate<euler_integrator>(system, U, tspan, nsteps);
+    auto time   = args["solver"]["start_time"].as<double>();
+    for (auto n = 0u; n < nsteps; ++n) {
+        auto rms_residual = euler_integrator::update(system, dt, time, U);
+        cout << setw(6) << n;
+        for (auto component : rms_residual) {
+            cout << scientific << setprecision(8) << setw(16) << component;
+        }
+        cout << '\n';
+        if (blaze::isnan(rms_residual))  // Not sure why this needs to be blaze::'d
+            break;
+    }
 
+    cin.ignore();
     return 0;
 }
