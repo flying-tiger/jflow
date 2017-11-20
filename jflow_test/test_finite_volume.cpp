@@ -59,9 +59,9 @@ TEST_CASE("Verify flux integration") {
         auto rho   = perfect_gas::compute_density(p, T);
         auto E     = perfect_gas::compute_energy(T) + 0.5 * (u * u + v * v);
         auto H     = E + p / rho;
-        auto diff0 = euler::flux{ -rho * v, 0.0, -rho * v * v, -rho * H * v };
+        auto diff0 = euler::flux{ rho * v, 0.0, rho * v * v, rho * H * v };
         auto diff1 = euler::flux{ 0.0, 0.0, 0.0, 0.0 };
-        auto diff2 = euler::flux{ -rho * v, 0.0, -3 * rho * v * v, -rho * v * (H + 3 * v * v) };
+        auto diff2 = euler::flux{ rho * v, 0.0, 3 * rho * v * v, rho * v * (H + 3 * v * v) };
 
         // Compute and check residual
         auto time = 0.0;

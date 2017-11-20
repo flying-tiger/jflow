@@ -50,7 +50,7 @@ auto finite_volume::compute_rhs(double t, const state& U) const -> residual {
         R[id] -= jmax_flux(U[id], f.area());
     }
 
-    return R * inverse_volumes_;
+    return -R * inverse_volumes_;
 }
 auto finite_volume::make_residual_vector() const -> residual {
     return residual(grid_.size_cell());
